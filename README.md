@@ -10,7 +10,7 @@
 - Clone repository or download .zip
 - Open folder with Java IDE (Intellij IDEA for example)
 - Maven will automatically downaload neccesary files
-- Set parameters for your bot in Main-hideenData class (you can hide it when you fill it)
+- Set parameters for your bot in Main-hiddenData class (you can hide it when you fill it)
 - run Main.java
 
 You can use Java terminal to sent text messages as Bot.
