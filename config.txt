@@ -1,0 +1,7 @@
+Token=""
+BotName=""
+BasePath=""
+Separator="/"
+ChatID=""
+TorrentAuto="False"
+AdminNick=""
