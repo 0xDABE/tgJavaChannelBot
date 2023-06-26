@@ -1,6 +1,6 @@
-# Telegram Channel Bot Logger and Syncronizer
+#     Telegram Channel Bot Logger and Syncronizer
 
-#### Requerements
+# Requerements
 ### For build (Maven)
 - [Python 3](https://www.python.org/downloads/) (must be in PATH, check it in terminal by "python")
 - [JDK 1.8](https://www.oracle.com/uk/java/technologies/downloads/) or higher
@@ -9,7 +9,7 @@
 - [Java Runtime 8](https://www.java.com/en/download/manual.jsp) (for Jar in release, JDK no needed for jar)
 
 
-#### Instructions
+# Instructions
 ### Build
 - Clone repository
   ```shell
