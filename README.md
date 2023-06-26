@@ -2,8 +2,8 @@
 
 #### Requerements
 ### For build (Maven)
-- Python 3 (must be in PATH, check it in terminal by "python")
-- JDK 1.8
+- [Python 3](https://www.python.org/downloads/) (must be in PATH, check it in terminal by "python")
+- [JDK 1.8 or higher](https://www.oracle.com/uk/java/technologies/downloads/)
   
 ### For launching from jar
 - [Java Runtime 8](https://www.java.com/en/download/manual.jsp) (for Jar in release, JDK no needed for jar)
@@ -11,8 +11,12 @@
 
 #### Instructions
 ### Build
-- Clone repository or download .zip
-- Open folder with Java IDE (Intellij IDEA for example)
+- Clone repository
+  ```shell
+  git clone fd
+  ```
+  or download .zip archieve
+- Open folder with Java IDE ([Intellij IDEA](https://www.jetbrains.com/idea/) for example)
 - Maven will automatically downaload neccesary files
 - Set config.txt (you can rename it in Main.java)
 - run Main.java
