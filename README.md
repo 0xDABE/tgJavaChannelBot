@@ -20,6 +20,7 @@
 - Maven will automatically downaload neccesary files
 - Set config.txt (you can rename it in Main.java)
 - run Main.java
+  
 ### Launching from Jar
 - Download release build
 - Unpack files from archieve to new folder
@@ -40,6 +41,7 @@
   ```
 
 
+#### Explanations
 - You can use Java terminal to sent text messages as Bot if you set ChatID in config file.
 - All user's sent data will be downloaded in your BaseFolder/TgUserName.
 - ChatLog is in BaseFolder.
