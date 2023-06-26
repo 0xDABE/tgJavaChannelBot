@@ -13,7 +13,7 @@
 ### Build
 - Clone repository
   ```shell
-  git clone fd
+  git clone https://github.com/0xDABE/tgJavaChannelBot
   ```
   or download .zip archieve
 - Open folder with Java IDE ([Intellij IDEA](https://www.jetbrains.com/idea/) for example)
