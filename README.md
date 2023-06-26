@@ -37,7 +37,7 @@
   ```
 - Run
   ```shell
-  java -jar tgJavaBotTestMain.jar
+  java -jar tgJavaBotTestMaven.jar
   ```
 
 
