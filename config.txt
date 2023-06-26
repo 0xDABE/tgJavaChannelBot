@@ -1,0 +1,20 @@
+# true and false case doesn't matter
+with * pointed obligatory settings, you can leave others with ""
+
+[Bot]
+*Token=""
+*BotName=""                   # it is bot's username
+ChatID=""                           # You can send messages from terminal to ChatID       # if empty, you can't use this feature
+
+[System]
+AdminNick=""                         # use only if you going to use shell: ShellIsOn must be True
+*LogFileName="chatLog.txt"
+LanguageFileName="languageCodes.txt"
+*BasePath=""     # WITHOUT last separator
+*Separator="/"
+*TimeZoneUTCplus="0"    #  Hour offset from UTC
+ShellIsOn="True"
+
+[Torrents]
+TorrentAuto="False"                            #  you can use it if only qbittorrent is in path (check if 'qbittorrent' in terminal launches it)
+TorrentSavePath=""        #  WITHOUT last separator              # will be ignored if TorrentAuto is False
