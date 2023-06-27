@@ -39,9 +39,52 @@
   ```shell
   java -jar tgJavaBotTestMaven.jar
   ```
+  On windows, better experience with [Windows Terminal](https://apps.microsoft.com/store/detail/windows-terminal/9N0DX20HK701)
+
+# Commands
+## help
+  ```shell
+  /help
+  ```
+ ### shows help menu. List of available commands. Different in direct messages and in channels.
+
+ 
+## calc
+```Python
+/calc 12**2+6
+```
+### Calculates python regex (spaces doesn't matter)
+#### Usage: /calc \<Python regex>
+
+## shell
+```Python
+/shell neofetch
+```
+### shell prompt. Intercepts shell's output stream to direct message. Each shell prompt runs in different sessions.
+### You can run shell commands in one session by | symbol, for example:
+```bash
+/shell cat .config/mpv/mpv.conf | grep gpu
+```
+#### Usage: /shell \<prompt>
+
+## tr
+```shell
+/tr en|fr hello
+```
+### Translates text in a given languages
+#### Usage: /tr \<srcLanguage>|\<destLang> \<srcText>
+### Use
+```shell
+/tr
+```
+### to send text from LanguageFile.txt to show language codes list 
+### Using /tr without language set, bot automatically translates text from ru to en, or from en to ru
+```shell
+/tr desk
+```
 
 
-#### Explanations
+# Extra
 - You can use Java terminal to sent text messages as Bot if you set ChatID in config file.
 - All user's sent data will be downloaded in your BaseFolder/TgUserName.
 - ChatLog is in BaseFolder.
