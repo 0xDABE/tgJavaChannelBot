@@ -2,8 +2,10 @@
 
 # Requerements
 ### For build (Maven)
-- [Python 3](https://www.python.org/downloads/) (must be in PATH, check it in terminal by "python")
 - [JDK 1.8](https://www.oracle.com/uk/java/technologies/downloads/) or higher
+- [Python 3](https://www.python.org/downloads/) (must be in PATH, check it in terminal by "python").
+  Optional, but needed for /shell and /calc commands
+
   
 ### For launching from jar
 - [Java Runtime 8](https://www.java.com/en/download/manual.jsp) (for Jar in release, JDK no needed for jar)
