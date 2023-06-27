@@ -31,6 +31,7 @@
   ```shell
   cd /home/Jeff/bot
   ```
+  ### Windows
   ```shell
   cd C:\Users\Jeff\Documents\bot
   ```
