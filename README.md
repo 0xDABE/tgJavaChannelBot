@@ -26,12 +26,11 @@
 - Unpack files from archieve to new folder
 - Set config
 - Run terminal and set working directory to folder with unpacked files
-  It may be like this:
+  It may be like this (for example):
   ## Linux
   ```shell
   cd /home/Jeff/bot
   ```
-  ## Windows
   ```shell
   cd C:\Users\Jeff\Documents\bot
   ```
