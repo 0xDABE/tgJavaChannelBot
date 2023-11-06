@@ -5,7 +5,7 @@
 - [JDK 17](https://www.oracle.com/uk/java/technologies/downloads/) or higher
 - [Python 3](https://www.python.org/downloads/) (must be in PATH, check it in terminal by "python").
   Optional, but needed for /shell and /calc commands
-- [qBittorrent](https://www.qbittorrent.org/). To run client without portable version(windows-only), you must add qBittorrent binaries to PATH.
+- [qBittorrent](https://www.qbittorrent.org/). Optional. To run client without portable version(windows-only), you must add qBittorrent binaries to PATH.
 
   
 ### For launching from jar
