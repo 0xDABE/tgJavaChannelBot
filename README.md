@@ -2,13 +2,14 @@
 
 # Requerements
 ### For build (Maven)
-- [JDK 1.8](https://www.oracle.com/uk/java/technologies/downloads/) or higher
+- [JDK 17](https://www.oracle.com/uk/java/technologies/downloads/) or higher
 - [Python 3](https://www.python.org/downloads/) (must be in PATH, check it in terminal by "python").
   Optional, but needed for /shell and /calc commands
+- [qBittorrent](https://www.qbittorrent.org/). To run client without portable version(windows-only), you must add qBittorrent binaries to PATH.
 
   
 ### For launching from jar
-- [Java Runtime 8](https://www.java.com/en/download/manual.jsp) (for Jar in release, JDK no needed for jar)
+- [Java Runtime 17](https://www.java.com/en/download/manual.jsp) (for Jar in release, JDK no needed for jar)
 
 
 # Instructions
@@ -85,6 +86,15 @@
 /tr desk
 ```
 
+## hb
+```shell
+/hb all
+```
+### Shows all info about happy birthdays from happy.txt (can be changed in config.txt)
+```shell
+/hb <days>
+```
+### Shows info about happy birthdays in <days> from happy.txt (can be changed in config.txt)
 
 # Extra
 - You can use Java terminal to sent text messages as Bot if you set ChatID in config file.
