@@ -16,5 +16,9 @@ LanguageFileName="languageCodes.txt"
 ShellIsOn="True"
 
 [Torrents]
+DoNotUsePortableTorrentClient="True"   			# Windows portable client only
 TorrentAuto="False"                            #  you can use it if only qbittorrent is in path (check if 'qbittorrent' in terminal launches it)
 TorrentSavePath=""        #  WITHOUT last separator              # will be ignored if TorrentAuto is False
+
+[HappyBirthday]
+HappyBirthdayFileName=""    # "happy.txt" as default
