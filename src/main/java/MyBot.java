@@ -244,7 +244,7 @@ public class MyBot extends TelegramLongPollingBot {
                         sb.append(ans);
                         len += ans.length();
                     }
-                    if (sb.length() == 0){
+                    if (sb.length() != 0){
                         if (len >= 4096){
                             int startIndex = 0;
                             int endIndex;
