@@ -29,12 +29,12 @@ public class hbReader {
             if (hbReader.getDayDiff(s) == 0) {
                 ArrayList<String> temp = hbDtoN.get(s);
                 for (String name : temp){
-                    today.add(name + " -> Сегодня " + hbReader.getYearDiff(s) + " " + hbReader.getPostfixY(hbReader.getYearDiff(s)));
+                    today.add(name + " -> Today " + hbReader.getYearDiff(s) + " " + hbReader.getPostfixY(hbReader.getYearDiff(s)));
                 }
             } else if (hbReader.getDayDiff(s) <= dayOffset) {
                 ArrayList<String> temp = hbDtoN.get(s);
                 for (String name : temp){
-                    close.add(name + ": через " + hbReader.getDayDiff(s) + " " + hbReader.getPostfixD(hbReader.getDayDiff(s)) + " -> " + (hbReader.getYearDiff(s) + 1) + " " + hbReader.getPostfixY(hbReader.getYearDiff(s) + 1));
+                    close.add(name + ": after " + hbReader.getDayDiff(s) + " " + hbReader.getPostfixD(hbReader.getDayDiff(s)) + " -> " + (hbReader.getYearDiff(s) + 1) + " " + hbReader.getPostfixY(hbReader.getYearDiff(s) + 1));
                     if (hbReader.getDayDiff(s) < shortest){
                         shortest = hbReader.getDayDiff(s);
                         c = i;
@@ -44,19 +44,28 @@ public class hbReader {
             }
         }
         if (!today.isEmpty()){
-            if (today.size() == 1) myBot.sendMessage("Сегодня День Рождения у:\n" + today.get(0));
+            if (today.size() == 1) {
+                myBot.sendMessage(String.format(
+                        "****************************\n" +
+                                "      Today Happy Birthday to:\n" +
+                                "%s\n" +
+                                "****************************",
+                        today.get(0)
+                ));
+            }
+
             else {
                 StringBuilder sb = new StringBuilder();
-                sb.append("Сегодня ДР у:\n");
+                sb.append("Today Happy Birthdays:\n");
                 for (String data : today) sb.append(data).append("\n");
                 myBot.sendMessage(sb.toString());
             }
         }
         if (!close.isEmpty()){
-            if (close.size() == 1) myBot.sendMessage("Скоро День Рождения:\n" + close.get(0));
+            if (close.size() == 1) myBot.sendMessage("Soon Happy Birthday:\n" + close.get(0));
             else {
                 StringBuilder sb = new StringBuilder();
-                sb.append("Скоро День Рождения у:\n");
+                sb.append("Soon Happy Birthdays:\n");
                 for (int j = c; j < close.size(); j++) {
                     sb.append(close.get(j)).append("\n");
                 }
@@ -132,13 +141,13 @@ public class hbReader {
     }
 
     public static String getPostfixY(long num){
-        if (num % 10 == 1) return "год";
-        else if (num % 10 > 0 && num % 10 < 5) return "года";
-        else return "лет";
+        if (num % 10 == 1) return "year";
+        else if (num % 10 > 0 && num % 10 < 5) return "years";
+        else return "years";
     }
     public static String getPostfixD(long num){
-        if (num % 10 == 1) return "день";
-        else if (num % 10 > 0 && num % 10 < 5) return "дня";
-        else return "дней";
+        if (num % 10 == 1) return "day";
+        else if (num % 10 > 0 && num % 10 < 5) return "days";
+        else return "days";
     }
 }

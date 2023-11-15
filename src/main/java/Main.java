@@ -3,10 +3,12 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 import java.io.File;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args){
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> ColoredMessage.red("Exiting...")));
         String CfgPath = "config.txt";
 
         MyBot myBot = new MyBot();
@@ -29,7 +31,6 @@ public class Main {
                 System.exit(-4);
             }
         }
-
 
         File file = new File(MyBot.languagePath);
         System.out.println("Language file: from \"" + MyBot.languagePath + "\"");
@@ -56,7 +57,10 @@ public class Main {
 
         if (MyBot.CHATID == 0L) ColoredMessage.green("Bot started");
         else ColoredMessage.green("Messages to " + chatid.substring(0, len/3) + "..." + chatid.substring((len/3)*2 ));
-        while (!(input = scan.nextLine()).isEmpty()) myBot.sendMessage(input);
+        try {
+            while (!(input = scan.nextLine()).isEmpty()) myBot.sendMessage(input);
+        }catch (NoSuchElementException ignored){
+        }
 
     }
 }

@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.file.Paths;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Scanner;
@@ -35,6 +36,14 @@ public class CfgLoader{
                     }
                     continue;
                 }
+                if (temp.contains("DoNotUsePortableTorrentClient=")){
+                    arr = temp.split("\"");
+                    if (Objects.equals(arr[1].toLowerCase(Locale.ROOT), "true"))
+                        MyBot.NotPortableClient = true;
+                    else if (!arr[1].toLowerCase(Locale.ROOT).equals("false")) ColoredMessage.yellow("    DoNotUsePortableTorrentClient is not True, but also not a False. " +
+                            "Launching with DoNotUsePortableTorrentClient=\"False\" (case does not matter)");
+                    continue;
+                }
                 if (temp.contains("BasePath=")){
                     arr = temp.split("\"");
                     MyBot.basePath = arr[1];
@@ -42,6 +51,7 @@ public class CfgLoader{
                         ColoredMessage.red("    Error: BasePath is empty");
                         return -1;
                     }
+                    Paths.get(MyBot.basePath).toFile().mkdirs();
                     continue;
                 }
                 if (temp.contains("Separator=")){
@@ -91,6 +101,13 @@ public class CfgLoader{
                     MyBot.languagePath = arr[1];
                     if (Objects.equals(MyBot.languagePath, "")){
                         ColoredMessage.yellow("    LanguageFileName is empty. Launching without it");
+                    }
+                }
+                if (temp.contains("HappyBirthdayFileName=")){
+                    arr = temp.split("\"");
+                    hbReader.HBfileName = arr[1];
+                    if (Objects.equals(hbReader.HBfileName, "happy.txt")){
+                        ColoredMessage.yellow("    HappyBirthdayFileName is empty. Launching without with \"happy.txt\"");
                     }
                 }
                 if (temp.contains("TorrentSavePath=")){
