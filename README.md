@@ -20,7 +20,7 @@
   ```
   or download .zip archieve
 - Open folder with Java IDE ([Intellij IDEA](https://www.jetbrains.com/idea/) for example)
-- Maven will automatically downaload neccesary files
+- Maven will automatically download neccesary files
 - Set config.txt (you can rename it in Main.java)
 - run Main.java
   
