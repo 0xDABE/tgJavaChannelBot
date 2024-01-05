@@ -1,6 +1,6 @@
 #     Telegram Channel Bot Logger and Syncronizer
 
-# Requerements
+# Requirements
 ### For build (Maven)
 - [JDK 17](https://www.oracle.com/uk/java/technologies/downloads/) or higher
 - [Python 3](https://www.python.org/downloads/) (must be in PATH, check it in terminal by "python").
@@ -18,7 +18,7 @@
   ```shell
   git clone https://github.com/0xDABE/tgJavaChannelBot
   ```
-  or download .zip archieve
+  or download .zip archive
 - Open folder with Java IDE ([Intellij IDEA](https://www.jetbrains.com/idea/) for example)
 - Maven will automatically download neccesary files
 - Set config.txt (you can rename it in Main.java)
@@ -26,7 +26,7 @@
   
 ### Launching from Jar
 - Download release build
-- Unpack files from archieve to new folder
+- Unpack files from archive to new folder
 - Set config
 - Run terminal and set working directory to folder with unpacked files
   It may be like this (for example):
