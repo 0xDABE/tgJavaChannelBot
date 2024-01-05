@@ -79,7 +79,7 @@ public class hbReader {
     public static void load(String path, Map<String, ArrayList<String>> hbDtoN, Map<String, ArrayList<String>> hbNtoD, ArrayList<String> datas){
         File file = new File(path);
         if (!file.exists()){
-            ColoredMessage.red("HB file not found at \"" + path + "\"");
+            ColoredMessage.red("HB file not found at \"" + path + "\"", CfgLoader.CompatibilityModeOff);
         }
 
 
@@ -100,7 +100,7 @@ public class hbReader {
                 if (!datas.contains(arr[1])) datas.add(arr[1]);
             }
             if (datas.isEmpty()){
-                ColoredMessage.yellow("HB file is empty or broken");
+                ColoredMessage.yellow("HB file is empty or broken", CfgLoader.CompatibilityModeOff);
                 System.exit(-1);
             }
         } catch (FileNotFoundException e){

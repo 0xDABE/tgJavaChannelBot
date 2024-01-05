@@ -41,7 +41,7 @@ public class MyBot extends TelegramLongPollingBot {
     public void sendMessage(String in) {
         SendMessage sm = new SendMessage();
         if (CHATID == 0L) {
-            ColoredMessage.yellow("Can't send to empty ChatID");
+            ColoredMessage.yellow("Can't send to empty ChatID", CfgLoader.CompatibilityModeOff);
             return;
         }
         sm.setChatId(CHATID);
@@ -56,8 +56,7 @@ public class MyBot extends TelegramLongPollingBot {
 
     private void helpUser(Message messageFromUpd) {
         SendMessage m = new SendMessage();
-        if (CHATID == 0L) m.setChatId(messageFromUpd.getChatId());
-        else m.setChatId(CHATID);
+        m.setChatId(messageFromUpd.getChatId());
         String s = """
                 Available commands:
 
@@ -155,8 +154,7 @@ public class MyBot extends TelegramLongPollingBot {
             bw.close();
             BufferedReader br = new BufferedReader(new InputStreamReader(pr.getInputStream()));
             SendMessage m = new SendMessage();
-            if (CHATID == 0L) m.setChatId(messageFromUpd.getChatId());
-            else m.setChatId(CHATID);
+            m.setChatId(messageFromUpd.getChatId());
             while ((ans = br.readLine()) != null) temp = ans;
             BufferedReader be = new BufferedReader(new InputStreamReader(pr.getErrorStream()));
             ans = temp;
@@ -179,8 +177,7 @@ public class MyBot extends TelegramLongPollingBot {
             if (!LanguageLoaded) {
                 SendMessage sm = new SendMessage();
                 sm.setText("Language file not loaded");
-                if (CHATID == 0L) sm.setChatId(messageFromUpd.getChatId());
-                else sm.setChatId(CHATID);
+                sm.setChatId(messageFromUpd.getChatId());
                 try {
                     execute(sm);
                 } catch (TelegramApiException e) {
@@ -201,8 +198,7 @@ public class MyBot extends TelegramLongPollingBot {
                 e.printStackTrace();
             }
             SendMessage sm = new SendMessage();
-            if (CHATID == 0L) sm.setChatId(messageFromUpd.getChatId());
-            else sm.setChatId(CHATID);
+            sm.setChatId(messageFromUpd.getChatId());
             sm.setText(sb.toString());
             try {
                 execute(sm);
@@ -247,8 +243,7 @@ public class MyBot extends TelegramLongPollingBot {
             String[] arr = response.toString().split("\"");
             String tr = decoder.decodeUnicodeEscape(arr[5]);
             SendMessage sm = new SendMessage();
-            if (CHATID == 0L) sm.setChatId(messageFromUpd.getChatId());
-            else sm.setChatId(CHATID);
+            sm.setChatId(messageFromUpd.getChatId());
             sm.setText(tr);
             try {
                 execute(sm);

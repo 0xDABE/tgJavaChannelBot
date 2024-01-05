@@ -5,7 +5,7 @@
 - [JDK 17](https://www.oracle.com/uk/java/technologies/downloads/) or higher
 - [Python 3](https://www.python.org/downloads/) (must be in PATH, check it in terminal by "python").
   Optional, but needed for /shell and /calc commands
-- [qBittorrent](https://www.qbittorrent.org/download). Optional. To run client without portable version(windows-only), you must add qBittorrent binaries to PATH.
+- [qBittorrent](https://www.qbittorrent.org/download). Optional. To run client without portable version(windows-only), you must add qBittorrent binaries to PATH. If you want to use [portable version](https://www.qbittorrent.org/download) of qBittorrent, download it and then rename to `qbittorrentPorted.exe` (windows only of course just for now)
 
   
 ### For launching from jar
@@ -100,4 +100,5 @@
 - You can use Java terminal to sent text messages as Bot if you set ChatID in config file.
 - All user's sent data will be downloaded in your BaseFolder/TgUserName.
 - ChatLog is in BaseFolder.
+- You can terminate bot using only SIGINT (Ctrl + C) or terminating terminal
 

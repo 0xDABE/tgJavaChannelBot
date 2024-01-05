@@ -7,10 +7,11 @@ import java.util.Scanner;
 
 public class CfgLoader{
     public static String returnable = "";
+    public static boolean CompatibilityModeOff = false;
     public static int load(String path){
         File file = new File(path);
         if (!file.exists()){
-            ColoredMessage.red("Config not found at \"" + path + "\"");
+            ColoredMessage.red("Config not found at \"" + path + "\"", CompatibilityModeOff);
             return -1;
         }
         System.out.println("Config: from \"" + path + "\"");
@@ -18,11 +19,19 @@ public class CfgLoader{
             while (scanf.hasNextLine()){
                 String temp = scanf.nextLine();
                 String[] arr;
+                if (temp.contains("ColoredOutput=")){
+                    arr = temp.split("\"");
+                    if (Objects.equals(arr[1].toLowerCase(Locale.ROOT), "true"))
+                        CompatibilityModeOff = true;
+                    else if (!arr[1].toLowerCase(Locale.ROOT).equals("false")) ColoredMessage.yellow("    ColoredOutput is not True, but also not a False. " +
+                            "Launching with ColoredOutput=\"False\" (case does not matter)", CompatibilityModeOff);
+                    continue;
+                }
                 if (temp.contains("Token=")){
                     arr = temp.split("\"");
                     MyBot.token = arr[1];
                     if (Objects.equals(MyBot.token, "")){
-                        ColoredMessage.red("    Error: token is empty");
+                        ColoredMessage.red("    Error: token is empty", CompatibilityModeOff);
                         return -1;
                     }
                     continue;
@@ -31,7 +40,7 @@ public class CfgLoader{
                     arr = temp.split("\"");
                     MyBot.botName = arr[1];
                     if (Objects.equals(MyBot.botName, "")){
-                        ColoredMessage.red("    Error: BotName is empty");
+                        ColoredMessage.red("    Error: BotName is empty", CompatibilityModeOff);
                         return -1;
                     }
                     continue;
@@ -41,14 +50,14 @@ public class CfgLoader{
                     if (Objects.equals(arr[1].toLowerCase(Locale.ROOT), "true"))
                         MyBot.NotPortableClient = true;
                     else if (!arr[1].toLowerCase(Locale.ROOT).equals("false")) ColoredMessage.yellow("    DoNotUsePortableTorrentClient is not True, but also not a False. " +
-                            "Launching with DoNotUsePortableTorrentClient=\"False\" (case does not matter)");
+                            "Launching with DoNotUsePortableTorrentClient=\"False\" (case does not matter)", CompatibilityModeOff);
                     continue;
                 }
                 if (temp.contains("BasePath=")){
                     arr = temp.split("\"");
                     MyBot.basePath = arr[1];
                     if (Objects.equals(MyBot.basePath, "")){
-                        ColoredMessage.red("    Error: BasePath is empty");
+                        ColoredMessage.red("    Error: BasePath is empty", CompatibilityModeOff);
                         return -1;
                     }
                     Paths.get(MyBot.basePath).toFile().mkdirs();
@@ -58,7 +67,7 @@ public class CfgLoader{
                     arr = temp.split("\"");
                     MyBot.sep = arr[1];
                     if (Objects.equals(MyBot.sep, "")){
-                        ColoredMessage.red("    Error: Separator is empty");
+                        ColoredMessage.red("    Error: Separator is empty", CompatibilityModeOff);
                         return -1;
                     }
                     continue;
@@ -80,7 +89,7 @@ public class CfgLoader{
                     if (Objects.equals(arr[1].toLowerCase(Locale.ROOT), "true"))
                         MyBot.TorrentAutoDownload = true;
                     else if (!arr[1].toLowerCase(Locale.ROOT).equals("false")) ColoredMessage.yellow("    TorrentAuto is not True, but also not a False. " +
-                            "Launching with TorrentAuto=\"False\" (case does not matter)");
+                            "Launching with TorrentAuto=\"False\" (case does not matter)", CompatibilityModeOff);
                     continue;
                 }
                 if (temp.contains("AdminNick=")){
@@ -92,7 +101,7 @@ public class CfgLoader{
                     arr = temp.split("\"");
                     MyBot.LogFileName = arr[1];
                     if (Objects.equals(MyBot.LogFileName, "")){
-                        ColoredMessage.red("    Error: LogFileName is empty");
+                        ColoredMessage.red("    Error: LogFileName is empty", CompatibilityModeOff);
                         return -1;
                     }
                 }
@@ -100,21 +109,21 @@ public class CfgLoader{
                     arr = temp.split("\"");
                     MyBot.languagePath = arr[1];
                     if (Objects.equals(MyBot.languagePath, "")){
-                        ColoredMessage.yellow("    LanguageFileName is empty. Launching without it");
+                        ColoredMessage.yellow("    LanguageFileName is empty. Launching without it", CompatibilityModeOff);
                     }
                 }
                 if (temp.contains("HappyBirthdayFileName=")){
                     arr = temp.split("\"");
                     hbReader.HBfileName = arr[1];
                     if (Objects.equals(hbReader.HBfileName, "happy.txt")){
-                        ColoredMessage.yellow("    HappyBirthdayFileName is empty. Launching without with \"happy.txt\"");
+                        ColoredMessage.yellow("    HappyBirthdayFileName is empty. Launching without with \"happy.txt\"", CompatibilityModeOff);
                     }
                 }
                 if (temp.contains("TorrentSavePath=")){
                     arr = temp.split("\"");
                     MyBot.TorrentSavePath = arr[1];
                     if (Objects.equals(MyBot.TorrentSavePath, "")){
-                        ColoredMessage.yellow("    TorrentSavePath is empty. Launching without auto torrent downloading");
+                        ColoredMessage.yellow("    TorrentSavePath is empty. Launching without auto torrent downloading", CompatibilityModeOff);
                     }
                 }
                 if (temp.contains("ShellIsOn=")){
@@ -122,7 +131,7 @@ public class CfgLoader{
                     if (Objects.equals(arr[1].toLowerCase(Locale.ROOT), "true"))
                         MyBot.ShellOn = true;
                     else if (!arr[1].toLowerCase(Locale.ROOT).equals("false")) ColoredMessage.yellow("    ShellIsOn is not True, but also not a False. " +
-                            "Launching with ShellIsOn=\"False\" (case does not matter)");
+                            "Launching with ShellIsOn=\"False\" (case does not matter)", CompatibilityModeOff);
                     continue;
                 }
                 if (temp.contains("TimeZoneUTCplus=")){
@@ -141,7 +150,7 @@ public class CfgLoader{
                     }
 
                     if (MyBot.TimeZone == 0){
-                        ColoredMessage.red("    Error: TimeZoneUTCplus is empty");
+                        ColoredMessage.red("    Error: TimeZoneUTCplus is empty", CompatibilityModeOff);
                         return -1;
                     }
                 }
@@ -151,20 +160,20 @@ public class CfgLoader{
         }
         if (Objects.equals(MyBot.Admin, "") && MyBot.ShellOn){
             ColoredMessage.yellow("    You set ShellIsOn to \"true\", but " +
-                    "not set Admin nick in config.");
-            ColoredMessage.yellow("    Launching with ShellIsOn=\"False\"\n");
+                    "not set Admin nick in config.", CompatibilityModeOff);
+            ColoredMessage.yellow("    Launching with ShellIsOn=\"False\"\n", CompatibilityModeOff);
         }
         if (Objects.equals(MyBot.TorrentSavePath, "") && MyBot.TorrentAutoDownload){
             ColoredMessage.yellow("    You set TorrentAuto to \"true\", but " +
-                    "not set torrent downloading path in config.");
-            ColoredMessage.yellow("    Launching with TorrentAuto=\"False\"\n");
+                    "not set torrent downloading path in config.", CompatibilityModeOff);
+            ColoredMessage.yellow("    Launching with TorrentAuto=\"False\"\n", CompatibilityModeOff);
         }
         if (Objects.equals(MyBot.sep, "") || Objects.equals(MyBot.basePath, "")
                 || Objects.equals(MyBot.botName, "") || Objects.equals(MyBot.token, "")){
-            ColoredMessage.red("Config is not correct");
+            ColoredMessage.red("Config is not correct", CompatibilityModeOff);
             return -1;
         }
-        else ColoredMessage.green("    loaded successfully");
+        else ColoredMessage.green("    loaded successfully\n", CompatibilityModeOff);
         return 0;
     }
 }

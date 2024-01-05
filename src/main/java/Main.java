@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args){
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> ColoredMessage.red("Exiting...")));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> ColoredMessage.red("Exiting...", CfgLoader.CompatibilityModeOff)));
         String CfgPath = "config.txt";
 
         MyBot myBot = new MyBot();
@@ -19,25 +19,25 @@ public class Main {
                 System.exit(1);
             }
             case -2:{
-                ColoredMessage.red("    \"" + CfgLoader.returnable + "\" is not a number");
+                ColoredMessage.red("    \"" + CfgLoader.returnable + "\" is not a number", CfgLoader.CompatibilityModeOff);
                 System.exit(-2);
             }
             case -3:{
-                ColoredMessage.red("    \"" + CfgLoader.returnable + "\" is not a UTC format ( -18 <= UTCtime <= 18)");
+                ColoredMessage.red("    \"" + CfgLoader.returnable + "\" is not a UTC format ( -18 <= UTCtime <= 18)", CfgLoader.CompatibilityModeOff);
                 System.exit(-3);
             }
             case -4:{
-                ColoredMessage.red("    \"" + CfgLoader.returnable + "\" is not a number");
+                ColoredMessage.red("    \"" + CfgLoader.returnable + "\" is not a number", CfgLoader.CompatibilityModeOff);
                 System.exit(-4);
             }
         }
 
         File file = new File(MyBot.languagePath);
         System.out.println("Language file: from \"" + MyBot.languagePath + "\"");
-        if (!file.exists()) ColoredMessage.yellow("\n     not loaded. Launching without it.");
+        if (!file.exists()) ColoredMessage.yellow("\n     not loaded. Launching without it.", CfgLoader.CompatibilityModeOff);
         else {
             MyBot.LanguageLoaded = true;
-            ColoredMessage.green("    loaded successfully");
+            ColoredMessage.green("    loaded successfully\n", CfgLoader.CompatibilityModeOff);
         }
 
         Thread botThread = new Thread(() -> {
@@ -55,8 +55,9 @@ public class Main {
         String input, chatid = String.valueOf(MyBot.CHATID);
         int len = chatid.length();
 
-        if (MyBot.CHATID == 0L) ColoredMessage.green("Bot started");
-        else ColoredMessage.green("Messages to " + chatid.substring(0, len/3) + "..." + chatid.substring((len/3)*2 ));
+        if (MyBot.CHATID == 0L) ColoredMessage.green("Bot started", CfgLoader.CompatibilityModeOff);
+        else ColoredMessage.green("Messages to " + chatid.substring(0, len/3) + "..." +
+                chatid.substring((len/3)*2 ) + "\n", CfgLoader.CompatibilityModeOff);
         try {
             while (!(input = scan.nextLine()).isEmpty()) myBot.sendMessage(input);
         }catch (NoSuchElementException ignored){
