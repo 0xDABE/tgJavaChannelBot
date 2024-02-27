@@ -534,6 +534,23 @@ public class MyBot extends TelegramLongPollingBot {
         }
     }
 
+    public void runWithMagnetLink(String link){
+        String TorrentClientExecPath;
+        if (NotPortableClient) TorrentClientExecPath = "qbittorrent";
+        else TorrentClientExecPath = "qbittorrentPorted";
+        ProcessBuilder pb = new ProcessBuilder(TorrentClientExecPath,
+                "--save-path=" + TorrentSavePath + sep,
+                "--add-paused=false",
+                "--sequential",
+                "--skip-dialog=true",
+                link);
+        try {
+            pb.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
@@ -557,6 +574,10 @@ public class MyBot extends TelegramLongPollingBot {
             }
             if (message.startsWith("/shell")) {
                 shellPy(update.getMessage());
+                return;
+            }
+            if (message.startsWith("magnet:")){
+                runWithMagnetLink(message);
                 return;
             }
         }
