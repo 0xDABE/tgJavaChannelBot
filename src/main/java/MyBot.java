@@ -17,6 +17,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
@@ -33,12 +34,26 @@ public class MyBot extends TelegramLongPollingBot {
     public static String Admin = "";
     public static String TorrentSavePath = "";
 
+    public static ArrayList<String> trustedUsers = new ArrayList<>();
+
     public static boolean NotPortableClient = false;
     public static boolean TorrentAutoDownload = false;
     public static boolean LanguageLoaded = false;
     public static boolean ShellOn = false;
 
-    public void sendMessage(String in) {
+    public enum User{
+        Admin, Trusted, User;
+
+        public String toString(){
+            switch (this){
+                case Admin -> {return "Admin";}
+                case Trusted -> {return "Trusted";}
+            }
+            return "User";
+        }
+    }
+
+    public void sendMessageToAdmin(String in) {
         SendMessage sm = new SendMessage();
         if (CHATID == 0L) {
             ColoredMessage.yellow("Can't send to empty ChatID", CfgLoader.CompatibilityModeOff);
@@ -51,68 +66,91 @@ public class MyBot extends TelegramLongPollingBot {
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
+    }
 
+    public void sendMessage(String in, long CHATID) {
+        SendMessage sm = new SendMessage();
+        if (CHATID == 0L) {
+            ColoredMessage.yellow("Can't send to empty ChatID", CfgLoader.CompatibilityModeOff);
+            return;
+        }
+        sm.setChatId(CHATID);
+        sm.setText(in);
+        try {
+            execute(sm);
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void helpUser(Message messageFromUpd) {
-        SendMessage m = new SendMessage();
-        m.setChatId(messageFromUpd.getChatId());
         String s = """
                 Available commands:
 
 
-                /help - command list (this)
+                    /help - command list (this)
+                    
+                    /whoami - your current previlegies
+                    Admin - root user (always trusted, solo)
+                    Trusted - trusted user (has more power than common user)
+                    User - common user
+    
+                    /calc -  Calculator
+                    Usage: /calc <regex>
+                    Example: /calc 12**2 + 1-3
+    
+                    /shell -  Server shell (not available in channels)
+    
+                    /tr -  Language translator
+                    Usage: /tr - language list
+                    /tr <languageSRC>|<languageOUT> <StringToTranslate>
+                    /tr <StringToTranslate> automatically translates ru|en or en|ru
+                    Example 1: /tr fr|ru merci
+                    Example 2: /tr привет
+                    Example 3: /tr user
+                    
+                Features:
+                    1. Trusted users are able to:
+                      - auto download raw magnet-links ("magnet:<...>")
+                      - auto download .torent files""";
 
-                /calc -  Calculator
-                Usage: /calc <regex>
-                Example: /calc 12**2 + 1-3
-
-                /shell -  Server shell (not available in channels)
-
-                /tr -  Language translator
-                Usage: /tr - language list
-                /tr <languageSRC>|<languageOUT> <StringToTranslate>
-                /tr <StringToTranslate> automatically translates ru|en or en|ru
-                Example 1: /tr fr|ru merci
-                Example 2: /tr привет
-                Example 3: /tr user""";
-        m.setText(s);
-        try {
-            execute(m);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
+        sendMessage(s, messageFromUpd.getChatId());
     }
 
     public void helpChannel(Message messageFromUpd) {
-        SendMessage m = new SendMessage();
-        if (CHATID == 0L) m.setChatId(messageFromUpd.getChatId());
-        else m.setChatId(CHATID);
         String s = """
                 Available commands:
 
 
-                /help - command list (this)
+                    /help - command list (this)
+                    
+                    /whoami - your current previlegies
+                    Admin - root user (always trusted, solo)
+                    Trusted - trusted user (has more power than common user)
+                    User - common user
+    
+                    /calc -  Calculator
+                    Usage: /calc <regex>
+                    Example: /calc 12**2 + 1-3
+    
+                    /shell -  Server shell (bot private message only usage)
+    
+                    /tr -  Language translator
+                    Usage: /tr - language list
+                    /tr <languageSRC>|<languageOUT> <StringToTranslate>
+                    /tr <StringToTranslate> automatically translates ru|en or en|ru
+                    Example 1: /tr fr|ru merci
+                    Example 2: /tr привет
+                    Example 3: /tr user
+                    
+                Features:
+                    1. Trusted users are able to:
+                      - auto download raw magnet-links ("magnet:<...>")
+                      - auto download .torent files""";
 
-                /calc -  Calculator
-                Usage: /calc <regex>
-                Example: /calc 12**2 + 1-3
 
-                /shell -  Server shell (bot private message only usage)
 
-                /tr -  Language translator
-                Usage: /tr - language list
-                /tr <languageSRC>|<languageOUT> <StringToTranslate>
-                /tr <StringToTranslate> automatically translates ru|en or en|ru
-                Example 1: /tr fr|ru merci
-                Example 2: /tr привет
-                Example 3: /tr user""";
-        m.setText(s);
-        try {
-            execute(m);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
+        sendMessage(s, messageFromUpd.getChatId());
     }
 
     public void happyBirthday(String message) {
@@ -129,14 +167,7 @@ public class MyBot extends TelegramLongPollingBot {
             int num = Integer.parseInt(message);
             hbReader.get(num, this);
         } catch (NumberFormatException e) {
-            SendMessage sm = new SendMessage();
-            sm.setText("\"" + message + "\" is not a number");
-            sm.setChatId(CHATID);
-            try {
-                execute(sm);
-            } catch (TelegramApiException e2) {
-                e2.printStackTrace();
-            }
+            sendMessageToAdmin("\"" + message + "\" is not a number");
         }
     }
 
@@ -153,18 +184,13 @@ public class MyBot extends TelegramLongPollingBot {
             bw.flush();
             bw.close();
             BufferedReader br = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-            SendMessage m = new SendMessage();
-            m.setChatId(messageFromUpd.getChatId());
+            String m;
             while ((ans = br.readLine()) != null) temp = ans;
             BufferedReader be = new BufferedReader(new InputStreamReader(pr.getErrorStream()));
             ans = temp;
-            if (be.readLine() == null) m.setText(ans);
-            else m.setText("Error");
-            try {
-                execute(m);
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
-            }
+            if (be.readLine() == null) m = ans;
+            else m = "Error";
+            sendMessage(m, messageFromUpd.getChatId());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -175,14 +201,7 @@ public class MyBot extends TelegramLongPollingBot {
         String message = messageFromUpd.getText().replace("/tr", "");
         if (message.isEmpty()) {
             if (!LanguageLoaded) {
-                SendMessage sm = new SendMessage();
-                sm.setText("Language file not loaded");
-                sm.setChatId(messageFromUpd.getChatId());
-                try {
-                    execute(sm);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
-                }
+                sendMessage("Language file not loaded", messageFromUpd.getChatId());
                 return;
             }
             java.io.File file = new java.io.File(languagePath);
@@ -197,14 +216,7 @@ public class MyBot extends TelegramLongPollingBot {
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
-            SendMessage sm = new SendMessage();
-            sm.setChatId(messageFromUpd.getChatId());
-            sm.setText(sb.toString());
-            try {
-                execute(sm);
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
-            }
+            sendMessage(sb.toString(), messageFromUpd.getChatId());
             return;
         }
         message = message.replaceFirst(" ", "");
@@ -242,14 +254,8 @@ public class MyBot extends TelegramLongPollingBot {
 
             String[] arr = response.toString().split("\"");
             String tr = decoder.decodeUnicodeEscape(arr[5]);
-            SendMessage sm = new SendMessage();
-            sm.setChatId(messageFromUpd.getChatId());
-            sm.setText(tr);
-            try {
-                execute(sm);
-            } catch (TelegramApiException e) {
-                throw new RuntimeException(e);
-            }
+
+            sendMessage(tr, messageFromUpd.getChatId());
             connection.disconnect();
         } catch (IOException e) {
             e.printStackTrace();
@@ -259,25 +265,11 @@ public class MyBot extends TelegramLongPollingBot {
     public void shellPy(Message messageFromUpd) {
         String message = messageFromUpd.getText();
         if (Objects.equals(Admin, "") || !ShellOn) {
-            SendMessage sm = new SendMessage();
-            sm.setChatId(messageFromUpd.getChatId());
-            sm.setText("You can't to this");
-            try {
-                execute(sm);
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
-            }
+            sendMessage("You can't to this", messageFromUpd.getChatId());
             return;
         }
         if (!Objects.equals(messageFromUpd.getFrom().getUserName(), Admin)) {
-            SendMessage sm = new SendMessage();
-            sm.setChatId(messageFromUpd.getChatId());
-            sm.setText("Haha, stupid hacker-huyaker. fak u");
-            try {
-                execute(sm);
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
-            }
+            sendMessage("Haha, stupid hacker-huyaker. fak u", messageFromUpd.getChatId());
             return;
         }
         String cmd = "python shell.py", ans;
@@ -295,9 +287,7 @@ public class MyBot extends TelegramLongPollingBot {
             bw.close();
             BufferedReader br = new BufferedReader(new InputStreamReader(pr.getInputStream(), Charset.forName("cp866")));
             StringBuilder sb = new StringBuilder();
-            SendMessage m = new SendMessage();
-            if (CHATID == 0L) m.setChatId(messageFromUpd.getChatId());
-            else m.setChatId(CHATID);
+            String m;
             int len = 0;
             while ((ans = br.readLine()) != null) {
                 sb.append(ans);
@@ -310,23 +300,11 @@ public class MyBot extends TelegramLongPollingBot {
                     String messageText = sb.toString();
                     while (startIndex < messageText.length()) {
                         endIndex = Math.min(startIndex + 4096, messageText.length());
-                        String part = messageText.substring(startIndex, endIndex);
-                        m.setText(part);
-                        try {
-                            execute(m);
-                        } catch (TelegramApiException e) {
-                            e.printStackTrace();
-                        }
+                        m = messageText.substring(startIndex, endIndex);
+                        sendMessage(m, messageFromUpd.getChatId());
                         startIndex = endIndex;
                     }
-                } else {
-                    m.setText(sb.toString());
-                    try {
-                        execute(m);
-                    } catch (TelegramApiException e) {
-                        e.printStackTrace();
-                    }
-                }
+                } else sendMessage(sb.toString(), messageFromUpd.getChatId());
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -383,7 +361,6 @@ public class MyBot extends TelegramLongPollingBot {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
@@ -415,7 +392,8 @@ public class MyBot extends TelegramLongPollingBot {
                 if (fileName.charAt(size - 1) == 't' && fileName.charAt(size - 2) == 'n' &&
                         fileName.charAt(size - 3) == 'e' && fileName.charAt(size - 4) == 'r' &&
                         fileName.charAt(size - 5) == 'r' && fileName.charAt(size - 6) == 'o' &&
-                        fileName.charAt(size - 7) == 't' && fileName.charAt(size - 8) == '.' && TorrentAutoDownload) {
+                        fileName.charAt(size - 7) == 't' && fileName.charAt(size - 8) == '.' &&
+                        TorrentAutoDownload && isTrusted(message.getFrom().getUserName())) {
                     String TorrentClientExecPath;
                     if (NotPortableClient) TorrentClientExecPath = "qbittorrent";
                     else TorrentClientExecPath = "qbittorrentPorted";
@@ -431,6 +409,10 @@ public class MyBot extends TelegramLongPollingBot {
                         e.printStackTrace();
                     }
 
+                }
+                else {
+                    sendMessage("You are not trusted user. Beg help from admin, little pussy", message.getChatId());
+                    return;
                 }
                 LocalDateTime dateTime = LocalDateTime.now();
                 ZonedDateTime zonedDateTime = dateTime.atZone(ZoneId.of("Europe/Moscow"));
@@ -534,6 +516,7 @@ public class MyBot extends TelegramLongPollingBot {
         }
     }
 
+
     public void runWithMagnetLink(String link){
         String TorrentClientExecPath;
         if (NotPortableClient) TorrentClientExecPath = "qbittorrent";
@@ -549,6 +532,18 @@ public class MyBot extends TelegramLongPollingBot {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean isTrusted(String user){
+        if (user.equals(MyBot.Admin)) return true;
+        for (String item : trustedUsers) if (user.equals(item)) return true;
+        return false;
+    }
+
+    public User getUserType(String user){
+        if (user.equals(MyBot.Admin)) return User.Admin;
+        if (isTrusted(user)) return User.Trusted;
+        return User.User;
     }
 
     @Override
@@ -576,8 +571,25 @@ public class MyBot extends TelegramLongPollingBot {
                 shellPy(update.getMessage());
                 return;
             }
+            if (message.equals("/whoami")) {
+                SendMessage sm = new SendMessage();
+                sm.setChatId(update.getMessage().getChatId());
+                sm.setText("You are \"" + getUserType(update.getMessage().getFrom().getUserName()).toString() + "\"");
+                try {
+                    execute(sm);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+                return;
+            }
             if (message.startsWith("magnet:")){
-                runWithMagnetLink(message);
+                if (isTrusted(update.getMessage().getFrom().getUserName()))
+                    runWithMagnetLink(message);
+                else {
+                    sendMessage("You are not trusted user. Beg help from admin, little pussy",
+                            update.getMessage().getChatId());
+                    return;
+                }
                 return;
             }
         }
@@ -623,14 +635,7 @@ public class MyBot extends TelegramLongPollingBot {
                 return;
             }
             if (message.startsWith("/shell")) {
-                SendMessage sm = new SendMessage();
-                sm.setChatId(update.getChannelPost().getChatId());
-                sm.setText("You can't use shell in channels");
-                try {
-                    execute(sm);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
-                }
+                sendMessage("You can't use shell in channels", update.getChannelPost().getChatId());
                 return;
             }
         }

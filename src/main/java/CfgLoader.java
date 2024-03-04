@@ -97,6 +97,11 @@ public class CfgLoader{
                     MyBot.Admin = arr[1];
                     continue;
                 }
+                if (temp.contains("AddTrustedUser=")){
+                    arr = temp.split("\"");
+                    MyBot.trustedUsers.add(arr[1]);
+                    continue;
+                }
                 if (temp.contains("LogFileName=")){
                     arr = temp.split("\"");
                     MyBot.LogFileName = arr[1];
@@ -158,6 +163,7 @@ public class CfgLoader{
         } catch (FileNotFoundException e){
             e.printStackTrace();
         }
+        
         if (Objects.equals(MyBot.Admin, "") && MyBot.ShellOn){
             ColoredMessage.yellow("    You set ShellIsOn to \"true\", but " +
                     "not set Admin nick in config.", CompatibilityModeOff);

@@ -59,7 +59,7 @@ public class Main {
         else ColoredMessage.green("Messages to " + chatid.substring(0, len/3) + "..." +
                 chatid.substring((len/3)*2 ) + "\n", CfgLoader.CompatibilityModeOff);
         try {
-            while (!(input = scan.nextLine()).isEmpty()) myBot.sendMessage(input);
+            while (!(input = scan.nextLine()).isEmpty()) myBot.sendMessageToAdmin(input);
         }catch (NoSuchElementException ignored){
         }
 

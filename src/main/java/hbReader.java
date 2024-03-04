@@ -45,7 +45,7 @@ public class hbReader {
         }
         if (!today.isEmpty()){
             if (today.size() == 1) {
-                myBot.sendMessage(String.format(
+                myBot.sendMessageToAdmin(String.format(
                         "****************************\n" +
                                 "      Today Happy Birthday to:\n" +
                                 "%s\n" +
@@ -58,11 +58,11 @@ public class hbReader {
                 StringBuilder sb = new StringBuilder();
                 sb.append("Today Happy Birthdays:\n");
                 for (String data : today) sb.append(data).append("\n");
-                myBot.sendMessage(sb.toString());
+                myBot.sendMessageToAdmin(sb.toString());
             }
         }
         if (!close.isEmpty()){
-            if (close.size() == 1) myBot.sendMessage("Soon Happy Birthday:\n" + close.get(0));
+            if (close.size() == 1) myBot.sendMessageToAdmin("Soon Happy Birthday:\n" + close.get(0));
             else {
                 StringBuilder sb = new StringBuilder();
                 sb.append("Soon Happy Birthdays:\n");
@@ -72,7 +72,7 @@ public class hbReader {
                 for (int j = 0; j < c; j++) {
                     sb.append(close.get(j)).append("\n");
                 }
-                myBot.sendMessage(sb.toString());
+                myBot.sendMessageToAdmin(sb.toString());
             }
         }
     }
