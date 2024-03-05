@@ -99,7 +99,7 @@ public class CfgLoader{
                 }
                 if (temp.contains("AddTrustedUser=")){
                     arr = temp.split("\"");
-                    MyBot.trustedUsers.add(arr[1]);
+                    MyBot.addTrustedUser(arr[1]);
                     continue;
                 }
                 if (temp.contains("LogFileName=")){

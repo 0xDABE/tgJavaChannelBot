@@ -76,7 +76,8 @@ public class hbReader {
             }
         }
     }
-    public static void load(String path, Map<String, ArrayList<String>> hbDtoN, Map<String, ArrayList<String>> hbNtoD, ArrayList<String> datas){
+    public static void load(String path, Map<String, ArrayList<String>> hbDtoN,
+                            Map<String, ArrayList<String>> hbNtoD, ArrayList<String> datas){
         File file = new File(path);
         if (!file.exists()){
             ColoredMessage.red("HB file not found at \"" + path + "\"", CfgLoader.CompatibilityModeOff);

@@ -571,6 +571,18 @@ public class MyBot extends TelegramLongPollingBot {
                 shellPy(update.getMessage());
                 return;
             }
+            if (message.startsWith("/addt")) {
+                addTrustedUser(update.getMessage());
+                return;
+            }
+            if (message.startsWith("/remt")) {
+                removeTrustedUser(update.getMessage());
+                return;
+            }
+            if (message.startsWith("/gett")) {
+                getTrustedUsers(update.getMessage());
+                return;
+            }
             if (message.equals("/whoami")) {
                 SendMessage sm = new SendMessage();
                 sm.setChatId(update.getMessage().getChatId());
@@ -665,6 +677,39 @@ public class MyBot extends TelegramLongPollingBot {
             return;
         }
     }
+
+    public static void addTrustedUser(String user){
+        if (!trustedUsers.contains(user)) trustedUsers.add(user);
+    }
+
+    public static void removeTrustedUser(String user){
+        trustedUsers.remove(user);
+    }
+
+    public void addTrustedUser(Message message){
+        if (message.getFrom().getUserName().equals(Admin))
+            addTrustedUser(message.getText().
+                    replace("/addt ", "").replace("@", "").trim());
+        else sendMessage("You can't little pussy", message.getChatId());
+    }
+
+    public void removeTrustedUser(Message message){
+        if (message.getFrom().getUserName().equals(Admin))
+            removeTrustedUser(message.getText().
+                    replace("/remt ", "").replace("@", "").trim());
+        else sendMessage("You can't little pussy", message.getChatId());
+    }
+
+    public void getTrustedUsers(Message message){
+        if (isTrusted(message.getFrom().getUserName())) {
+            StringBuilder sb = new StringBuilder();
+            for (String item : trustedUsers) sb.append("@").append(item).append(", ");
+            sb.delete(sb.length() - 2, sb.length() - 1);
+            sendMessage(sb.toString(), message.getChatId());
+        }
+        else sendMessage("You are not trusted user to get trusted users lol", message.getChatId());
+    }
+
 
     @Override
     public String getBotUsername() {
