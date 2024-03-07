@@ -67,7 +67,7 @@ public class Main {
         //todo: switch send messaged to console
 
         try {
-            while (!(input = scan.nextLine()).isEmpty()) myBot.sendMessageToAdmin(input);
+            while (!(input = scan.nextLine()).isEmpty()) myBot.sendMessageToAdmin(input, true);
         }catch (NoSuchElementException ignored){}
     }
 }

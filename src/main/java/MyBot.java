@@ -53,13 +53,13 @@ public class MyBot extends TelegramLongPollingBot {
         }
     }
 
-    public void sendMessageToAdmin(String in) {
+    public void sendMessageToAdmin(String in, boolean makrdown) {
         SendMessage sm = new SendMessage();
         if (CHATID == 0L) {
             ColoredMessage.yellow("Can't send to empty ChatID", CfgLoader.CompatibilityModeOff);
             return;
         }
-        sm.enableMarkdownV2(true);
+        sm.enableMarkdownV2(makrdown);
         sm.setChatId(CHATID);
         sm.setText(in);
         try {
@@ -69,14 +69,14 @@ public class MyBot extends TelegramLongPollingBot {
         }
     }
 
-    public void sendMessage(String in, long CHATID) {
+    public void sendMessage(String in, long CHATID, boolean makrdown) {
         SendMessage sm = new SendMessage();
         if (CHATID == 0L) {
             ColoredMessage.yellow("Can't send to empty ChatID", CfgLoader.CompatibilityModeOff);
             return;
         }
         sm.setChatId(CHATID);
-        sm.enableMarkdownV2(true);
+        sm.enableMarkdownV2(makrdown);
         sm.setText(in);
         try {
             execute(sm);
@@ -116,7 +116,7 @@ public class MyBot extends TelegramLongPollingBot {
                       - auto download raw magnet-links ("magnet:<...>")
                       - auto download .torent files""";
 
-        sendMessage(s, messageFromUpd.getChatId());
+        sendMessage(s, messageFromUpd.getChatId(), false);
     }
 
     public void helpChannel(Message messageFromUpd) {
@@ -152,24 +152,29 @@ public class MyBot extends TelegramLongPollingBot {
 
 
 
-        sendMessage(s, messageFromUpd.getChatId());
+        sendMessage(s, messageFromUpd.getChatId(), false);
     }
 
-    public void happyBirthday(String message) {
-        if (message.equals("/hb")) {
+    public void happyBirthday(Message message) {
+        String text = message.getText();
+        if (!message.getFrom().getUserName().equals(Admin)){
+            sendMessage("You can't sorry", message.getChatId(), false);
+            return;
+        }
+        if (text.equals("/hb")) {
             hbReader.get(20, this);
             return;
         }
-        if (message.equals("/hb all") || message.equals("/hb a")) {
+        if (text.equals("/hb all") || text.equals("/hb a")) {
             hbReader.get(366, this);
             return;
         }
-        message = message.replace("/hb ", "");
+        text = text.replace("/hb ", "");
         try {
-            int num = Integer.parseInt(message);
+            int num = Integer.parseInt(text);
             hbReader.get(num, this);
         } catch (NumberFormatException e) {
-            sendMessageToAdmin("\"" + message + "\" is not a number");
+            sendMessageToAdmin("\"" + text + "\" is not a number", false);
         }
     }
 
@@ -192,7 +197,7 @@ public class MyBot extends TelegramLongPollingBot {
             ans = temp;
             if (be.readLine() == null) m = ans;
             else m = "Error";
-            sendMessage(m, messageFromUpd.getChatId());
+            sendMessage(m, messageFromUpd.getChatId(), false);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -203,7 +208,7 @@ public class MyBot extends TelegramLongPollingBot {
         String message = messageFromUpd.getText().replace("/tr", "");
         if (message.isEmpty()) {
             if (!LanguageLoaded) {
-                sendMessage("Language file not loaded", messageFromUpd.getChatId());
+                sendMessage("Language file not loaded", messageFromUpd.getChatId(), false);
                 return;
             }
             java.io.File file = new java.io.File(languagePath);
@@ -218,7 +223,7 @@ public class MyBot extends TelegramLongPollingBot {
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
-            sendMessage(sb.toString(), messageFromUpd.getChatId());
+            sendMessage(sb.toString(), messageFromUpd.getChatId(), false);
             return;
         }
         message = message.replaceFirst(" ", "");
@@ -257,7 +262,7 @@ public class MyBot extends TelegramLongPollingBot {
             String[] arr = response.toString().split("\"");
             String tr = decoder.decodeUnicodeEscape(arr[5]);
 
-            sendMessage(tr, messageFromUpd.getChatId());
+            sendMessage(tr, messageFromUpd.getChatId(), false);
             connection.disconnect();
         } catch (IOException e) {
             e.printStackTrace();
@@ -267,11 +272,11 @@ public class MyBot extends TelegramLongPollingBot {
     public void shellPy(Message messageFromUpd) {
         String message = messageFromUpd.getText();
         if (Objects.equals(Admin, "") || !ShellOn) {
-            sendMessage("You can't to this", messageFromUpd.getChatId());
+            sendMessage("You can't to this", messageFromUpd.getChatId(), false);
             return;
         }
         if (!Objects.equals(messageFromUpd.getFrom().getUserName(), Admin)) {
-            sendMessage("Haha, stupid hacker-huyaker. fak u", messageFromUpd.getChatId());
+            sendMessage("Haha, stupid hacker-huyaker. fak u", messageFromUpd.getChatId(), false);
             return;
         }
         String cmd = "python shell.py", ans;
@@ -303,10 +308,10 @@ public class MyBot extends TelegramLongPollingBot {
                     while (startIndex < messageText.length()) {
                         endIndex = Math.min(startIndex + 4096, messageText.length());
                         m = messageText.substring(startIndex, endIndex);
-                        sendMessage(m, messageFromUpd.getChatId());
+                        sendMessage(m, messageFromUpd.getChatId(), false);
                         startIndex = endIndex;
                     }
-                } else sendMessage(sb.toString(), messageFromUpd.getChatId());
+                } else sendMessage(sb.toString(), messageFromUpd.getChatId(), false);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -413,7 +418,7 @@ public class MyBot extends TelegramLongPollingBot {
 
                 }
                 else {
-                    sendMessage("You are not trusted user. Beg help from admin, little pussy", message.getChatId());
+                    sendMessage("You are not trusted user. Beg help from admin, little pussy", message.getChatId(), false);
                     return;
                 }
                 LocalDateTime dateTime = LocalDateTime.now();
@@ -558,7 +563,7 @@ public class MyBot extends TelegramLongPollingBot {
                 return;
             }
             if (message.startsWith("/hb")) {
-                happyBirthday(message);
+                happyBirthday(update.getMessage());
                 return;
             }
             if (message.startsWith("/calc")) {
@@ -594,7 +599,7 @@ public class MyBot extends TelegramLongPollingBot {
                     runWithMagnetLink(message);
                 else {
                     sendMessage("You are not trusted user. Beg help from admin, little pussy",
-                            update.getMessage().getChatId());
+                            update.getMessage().getChatId(), false);
                     return;
                 }
                 return;
@@ -646,7 +651,7 @@ public class MyBot extends TelegramLongPollingBot {
                 return;
             }
             if (message.startsWith("/shell")) {
-                sendMessage("You can't use shell in channels", update.getChannelPost().getChatId());
+                sendMessage("You can't use shell in channels", update.getChannelPost().getChatId(), false);
                 return;
             }
         }
@@ -689,14 +694,14 @@ public class MyBot extends TelegramLongPollingBot {
         if (message.getFrom().getUserName().equals(Admin))
             addTrustedUser(message.getText().
                     replace("/addt ", "").replace("@", "").trim());
-        else sendMessage("You can't little pussy", message.getChatId());
+        else sendMessage("You can't little pussy", message.getChatId(), false);
     }
 
     public void removeTrustedUser(Message message){
         if (message.getFrom().getUserName().equals(Admin))
             removeTrustedUser(message.getText().
                     replace("/remt ", "").replace("@", "").trim());
-        else sendMessage("You can't little pussy", message.getChatId());
+        else sendMessage("You can't little pussy", message.getChatId(), false);
     }
 
     public void getTrustedUsers(Message message){
@@ -704,20 +709,20 @@ public class MyBot extends TelegramLongPollingBot {
             StringBuilder sb = new StringBuilder();
             for (String item : trustedUsers) sb.append("@").append(item).append(", ");
             sb.delete(sb.length() - 2, sb.length() - 1);
-            sendMessage(sb.toString(), message.getChatId());
+            sendMessage(sb.toString(), message.getChatId(), false);
         }
-        else sendMessage("You are not trusted user to get trusted users lol", message.getChatId());
+        else sendMessage("You are not trusted user to get trusted users lol", message.getChatId(), false);
     }
 
     public void whoAmI(Message message){
         sendMessage("You are \"" + getUserType(message.getFrom().getUserName()).toString() + "\"",
-                message.getChatId());
+                message.getChatId(), false);
     }
 
     public void runTest(Message message){
         if (!message.getFrom().getUserName().equals(Admin)){
             sendMessage("You are too stupid to do test stuff, only admin can",
-                    message.getChatId());
+                    message.getChatId(), false);
             return;
         }
 
@@ -750,7 +755,7 @@ public class MyBot extends TelegramLongPollingBot {
                 append(Times.getTimeMillis(System.currentTimeMillis() - Main.upTimeStart)).
                 append("\n");
 
-        sendMessageToAdmin(sb.toString());
+        sendMessageToAdmin(sb.toString(), true);
     }
 
     //todo: add command handler to log

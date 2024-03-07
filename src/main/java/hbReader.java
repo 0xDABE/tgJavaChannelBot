@@ -51,18 +51,18 @@ public class hbReader {
                                 "%s\n" +
                                 "****************************",
                         today.get(0)
-                ));
+                ), false);
             }
 
             else {
                 StringBuilder sb = new StringBuilder();
                 sb.append("Today Happy Birthdays:\n");
                 for (String data : today) sb.append(data).append("\n");
-                myBot.sendMessageToAdmin(sb.toString());
+                myBot.sendMessageToAdmin(sb.toString(), false);
             }
         }
         if (!close.isEmpty()){
-            if (close.size() == 1) myBot.sendMessageToAdmin("Soon Happy Birthday:\n" + close.get(0));
+            if (close.size() == 1) myBot.sendMessageToAdmin("Soon Happy Birthday:\n" + close.get(0), false);
             else {
                 StringBuilder sb = new StringBuilder();
                 sb.append("Soon Happy Birthdays:\n");
@@ -72,7 +72,7 @@ public class hbReader {
                 for (int j = 0; j < c; j++) {
                     sb.append(close.get(j)).append("\n");
                 }
-                myBot.sendMessageToAdmin(sb.toString());
+                myBot.sendMessageToAdmin(sb.toString(), false);
             }
         }
     }
@@ -87,18 +87,22 @@ public class hbReader {
         try(Scanner scanf = new Scanner(file)) {
             while (scanf.hasNextLine()) {
                 String[] arr = scanf.nextLine().split(" ");
+
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < arr.length - 1; i++) sb.append(arr[i]).append(" ");
+
                 ArrayList<String> temp;
-                if (!hbDtoN.containsKey(arr[1])){
+                if (!hbDtoN.containsKey(arr[arr.length - 1])){
                     temp = new ArrayList<>();
                 } else {
-                    temp = hbDtoN.get(arr[1]);
+                    temp = hbDtoN.get(arr[arr.length - 1]);
                 }
-                temp.add(arr[0]);
-                hbDtoN.put(arr[1], temp);
+                temp.add(sb.toString());
+                hbDtoN.put(arr[arr.length - 1], temp);
                 temp = new ArrayList<>();
-                temp.add(arr[1]);
-                hbNtoD.put(arr[0], temp);
-                if (!datas.contains(arr[1])) datas.add(arr[1]);
+                temp.add(arr[arr.length - 1]);
+                hbNtoD.put(sb.toString(), temp);
+                if (!datas.contains(arr[arr.length - 1])) datas.add(arr[arr.length - 1]);
             }
             if (datas.isEmpty()){
                 ColoredMessage.yellow("HB file is empty or broken", CfgLoader.CompatibilityModeOff);
