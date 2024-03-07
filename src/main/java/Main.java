@@ -7,8 +7,9 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Main {
+
+    public static long upTimeStart = System.currentTimeMillis();
     public static void main(String[] args){
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> ColoredMessage.red("Exiting...", CfgLoader.CompatibilityModeOff)));
         String CfgPath = "config.txt";
 
         MyBot myBot = new MyBot();
@@ -58,6 +59,10 @@ public class Main {
         if (MyBot.CHATID == 0L) ColoredMessage.green("Bot started", CfgLoader.CompatibilityModeOff);
         else ColoredMessage.green("Messages to " + chatid.substring(0, len/3) + "..." +
                 chatid.substring((len/3)*2 ) + "\n", CfgLoader.CompatibilityModeOff);
+
+
+        //todo: switch send messaged to console
+
         try {
             while (!(input = scan.nextLine()).isEmpty()) myBot.sendMessageToAdmin(input);
         }catch (NoSuchElementException ignored){

@@ -59,6 +59,7 @@ public class MyBot extends TelegramLongPollingBot {
             ColoredMessage.yellow("Can't send to empty ChatID", CfgLoader.CompatibilityModeOff);
             return;
         }
+        sm.enableMarkdownV2(true);
         sm.setChatId(CHATID);
         sm.setText(in);
         try {
@@ -75,6 +76,7 @@ public class MyBot extends TelegramLongPollingBot {
             return;
         }
         sm.setChatId(CHATID);
+        sm.enableMarkdownV2(true);
         sm.setText(in);
         try {
             execute(sm);
@@ -584,14 +586,7 @@ public class MyBot extends TelegramLongPollingBot {
                 return;
             }
             if (message.equals("/whoami")) {
-                SendMessage sm = new SendMessage();
-                sm.setChatId(update.getMessage().getChatId());
-                sm.setText("You are \"" + getUserType(update.getMessage().getFrom().getUserName()).toString() + "\"");
-                try {
-                    execute(sm);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
-                }
+                whoAmI(update.getMessage());
                 return;
             }
             if (message.startsWith("magnet:")){
@@ -602,6 +597,10 @@ public class MyBot extends TelegramLongPollingBot {
                             update.getMessage().getChatId());
                     return;
                 }
+                return;
+            }
+            if (message.equals("/test")){
+                runTest(update.getMessage());
                 return;
             }
         }
@@ -708,6 +707,50 @@ public class MyBot extends TelegramLongPollingBot {
             sendMessage(sb.toString(), message.getChatId());
         }
         else sendMessage("You are not trusted user to get trusted users lol", message.getChatId());
+    }
+
+    public void whoAmI(Message message){
+        sendMessage("You are \"" + getUserType(message.getFrom().getUserName()).toString() + "\"",
+                message.getChatId());
+    }
+
+    public void runTest(Message message){
+        if (!message.getFrom().getUserName().equals(Admin)){
+            sendMessage("You are too stupid to do test stuff, only admin can",
+                    message.getChatId());
+            return;
+        }
+
+        String ok = "\uD83D\uDC4D", warn = "⚠", err = "\uD83D\uDC80";
+
+        SendMessage sm = new SendMessage();
+        sm.enableMarkdownV2(true);
+        sm.setChatId(CHATID); // emojis:  👍⚠💀
+
+        StringBuilder sb = new StringBuilder();
+
+        {                                           //  system block
+            sb.append("```system").append("\n");
+            sb.append("Token: ").append(ok).append("\n");        //      if u see this message, token is always ok
+
+            sb.append("Shell: ");                   //      shell
+            if (ShellOn) sb.append("ON");
+            else sb.append("OFF");
+            sb.append("\n");
+
+            sb.append("```").append("\n");
+        }
+
+        {                                           // trusted users block
+            sb.append("Trusted users: ").append(trustedUsers.size()).append("\n");
+            for (String user : trustedUsers) sb.append("    @").append(user).append("\n");
+        }
+
+
+
+
+
+        sendMessageToAdmin(sb.toString());
     }
 
 
