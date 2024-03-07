@@ -742,16 +742,18 @@ public class MyBot extends TelegramLongPollingBot {
         }
 
         {                                           // trusted users block
-            sb.append("Trusted users: ").append(trustedUsers.size()).append("\n");
+            sb.append("Current trusted users: ").append(trustedUsers.size()).append("\n");
             for (String user : trustedUsers) sb.append("    @").append(user).append("\n");
         }
 
-
-
-
+        sb.append("Uptime: ").
+                append(Times.getTimeMillis(System.currentTimeMillis() - Main.upTimeStart)).
+                append("\n");
 
         sendMessageToAdmin(sb.toString());
     }
+
+    //todo: add command handler to log
 
 
     @Override

@@ -10,6 +10,10 @@ public class Main {
 
     public static long upTimeStart = System.currentTimeMillis();
     public static void main(String[] args){
+        run();
+    }
+
+    public static void run(){
         String CfgPath = "config.txt";
 
         MyBot myBot = new MyBot();
@@ -49,7 +53,6 @@ public class Main {
                 e.printStackTrace();
             }
         });
-
         botThread.start();
 
         Scanner scan = new Scanner(System.in);
@@ -65,9 +68,7 @@ public class Main {
 
         try {
             while (!(input = scan.nextLine()).isEmpty()) myBot.sendMessageToAdmin(input);
-        }catch (NoSuchElementException ignored){
-        }
-
+        }catch (NoSuchElementException ignored){}
     }
 }
 

@@ -1,5 +1,3 @@
-package com.dalibe;
-
 public class Times {
     public static void main(String[] args) {
         long start = System.nanoTime();
