@@ -419,7 +419,8 @@ public class MyBot extends TelegramLongPollingBot {
 
                 }
                 else {
-                    sendMessage("You are not trusted user. Beg help from admin, little pussy", message.getChatId(), false);
+                    sendMessage("You are not trusted user. Beg help from admin, little pussy",
+                            message.getChatId(), false);
                     return;
                 }
                 LocalDateTime dateTime = LocalDateTime.now();
@@ -560,42 +561,52 @@ public class MyBot extends TelegramLongPollingBot {
             String message = update.getMessage().getText();
 
             if (message.startsWith("/help")) {
+                writeToLogFile(update.getMessage());
                 helpUser(update.getMessage());
                 return;
             }
             if (message.startsWith("/hb")) {
+                writeToLogFile(update.getMessage());
                 happyBirthday(update.getMessage());
                 return;
             }
             if (message.startsWith("/calc")) {
+                writeToLogFile(update.getMessage());
                 calcPy(update.getMessage());
                 return;
             }
             if (message.startsWith("/tr")) {
+                writeToLogFile(update.getMessage());
                 translate(update.getMessage());
                 return;
             }
             if (message.startsWith("/shell")) {
+                writeToLogFile(update.getMessage());
                 shellPy(update.getMessage());
                 return;
             }
             if (message.startsWith("/addt")) {
+                writeToLogFile(update.getMessage());
                 addTrustedUser(update.getMessage());
                 return;
             }
             if (message.startsWith("/remt")) {
+                writeToLogFile(update.getMessage());
                 removeTrustedUser(update.getMessage());
                 return;
             }
             if (message.startsWith("/gett")) {
+                writeToLogFile(update.getMessage());
                 getTrustedUsers(update.getMessage());
                 return;
             }
             if (message.equals("/whoami")) {
+                writeToLogFile(update.getMessage());
                 whoAmI(update.getMessage());
                 return;
             }
             if (message.startsWith("magnet:")){
+                writeToLogFile(update.getMessage());
                 if (isTrusted(update.getMessage().getFrom().getUserName()))
                     runWithMagnetLink(message);
                 else {
@@ -606,6 +617,7 @@ public class MyBot extends TelegramLongPollingBot {
                 return;
             }
             if (message.equals("/test")){
+                writeToLogFile(update.getMessage());
                 runTest(update.getMessage());
                 return;
             }
