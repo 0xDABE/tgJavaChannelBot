@@ -48,7 +48,7 @@ public class CfgLoader{
                 if (temp.contains("DoNotUsePortableTorrentClient=")){
                     arr = temp.split("\"");
                     if (Objects.equals(arr[1].toLowerCase(Locale.ROOT), "true"))
-                        MyBot.NotPortableClient = true;
+                        MyBot.IgnorePortableClient = true;
                     else if (!arr[1].toLowerCase(Locale.ROOT).equals("false")) ColoredMessage.yellow("    DoNotUsePortableTorrentClient is not True, but also not a False. " +
                             "Launching with DoNotUsePortableTorrentClient=\"False\" (case does not matter)", CompatibilityModeOff);
                     continue;

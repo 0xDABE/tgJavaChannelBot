@@ -28,15 +28,16 @@ public class MyBot extends TelegramLongPollingBot {
     public static String botName = "";
     public static String basePath = "";
     public static String LogFileName = "";
-    public static int TimeZone = 0;
     public static String sep = "";
     public static String languagePath = "";
     public static String Admin = "";
     public static String TorrentSavePath = "";
 
-    public static ArrayList<String> trustedUsers = new ArrayList<>();
+    public static int TimeZone = 0;
 
-    public static boolean NotPortableClient = false;
+    public static ArrayList<String> trustedUsersFromConfig = new ArrayList<>();
+
+    public static boolean IgnorePortableClient = false;
     public static boolean TorrentAutoDownload = false;
     public static boolean LanguageLoaded = false;
     public static boolean ShellOn = false;
@@ -402,7 +403,7 @@ public class MyBot extends TelegramLongPollingBot {
                         fileName.charAt(size - 7) == 't' && fileName.charAt(size - 8) == '.' &&
                         TorrentAutoDownload && isTrusted(message.getFrom().getUserName())) {
                     String TorrentClientExecPath;
-                    if (NotPortableClient) TorrentClientExecPath = "qbittorrent";
+                    if (IgnorePortableClient) TorrentClientExecPath = "qbittorrent";
                     else TorrentClientExecPath = "qbittorrentPorted";
                     ProcessBuilder pb = new ProcessBuilder(TorrentClientExecPath,
                             "--save-path=" + TorrentSavePath + sep,
@@ -526,7 +527,7 @@ public class MyBot extends TelegramLongPollingBot {
 
     public void runWithMagnetLink(String link){
         String TorrentClientExecPath;
-        if (NotPortableClient) TorrentClientExecPath = "qbittorrent";
+        if (IgnorePortableClient) TorrentClientExecPath = "qbittorrent";
         else TorrentClientExecPath = "qbittorrentPorted";
         ProcessBuilder pb = new ProcessBuilder(TorrentClientExecPath,
                 "--save-path=" + TorrentSavePath + sep,
@@ -543,7 +544,7 @@ public class MyBot extends TelegramLongPollingBot {
 
     public boolean isTrusted(String user){
         if (user.equals(MyBot.Admin)) return true;
-        for (String item : trustedUsers) if (user.equals(item)) return true;
+        for (String item : trustedUsersFromConfig) if (user.equals(item)) return true;
         return false;
     }
 
@@ -683,11 +684,11 @@ public class MyBot extends TelegramLongPollingBot {
     }
 
     public static void addTrustedUser(String user){
-        if (!trustedUsers.contains(user)) trustedUsers.add(user);
+        if (!trustedUsersFromConfig.contains(user)) trustedUsersFromConfig.add(user);
     }
 
     public static void removeTrustedUser(String user){
-        trustedUsers.remove(user);
+        trustedUsersFromConfig.remove(user);
     }
 
     public void addTrustedUser(Message message){
@@ -707,7 +708,7 @@ public class MyBot extends TelegramLongPollingBot {
     public void getTrustedUsers(Message message){
         if (isTrusted(message.getFrom().getUserName())) {
             StringBuilder sb = new StringBuilder();
-            for (String item : trustedUsers) sb.append("@").append(item).append(", ");
+            for (String item : trustedUsersFromConfig) sb.append("@").append(item).append(", ");
             sb.delete(sb.length() - 2, sb.length() - 1);
             sendMessage(sb.toString(), message.getChatId(), false);
         }
@@ -720,6 +721,7 @@ public class MyBot extends TelegramLongPollingBot {
     }
 
     public void runTest(Message message){
+        int errors = 0, warnings = 0;
         if (!message.getFrom().getUserName().equals(Admin)){
             sendMessage("You are too stupid to do test stuff, only admin can",
                     message.getChatId(), false);
@@ -747,13 +749,33 @@ public class MyBot extends TelegramLongPollingBot {
         }
 
         {                                           // trusted users block
-            sb.append("Current trusted users: ").append(trustedUsers.size()).append("\n");
-            for (String user : trustedUsers) sb.append("    @").append(user).append("\n");
+            sb.append("Current trusted users: ").append(trustedUsersFromConfig.size()).append("\n");
+            for (String user : trustedUsersFromConfig) sb.append("    @").append(user).append("\n");
+        }
+
+        {
+            sb.append("```Torrents").append("\n").append("Auto : ");
+
+            if (TorrentAutoDownload) {
+                sb.append("ON").append("\n");
+                java.io.File file = new java.io.File(TorrentSavePath);
+                sb.append("Path: ");
+                if (file.exists()) sb.append(ok).append("\n");
+                else{
+                    sb.append(err).append(" (path unaccessible)\n");
+                    errors+=1;
+                }
+                sb.append("```").append("\n");
+            }
+            else sb.append("OFF").append("\n").append("```").append("\n");
         }
 
         sb.append("Uptime: ").
                 append(Times.getTimeMillis(System.currentTimeMillis() - Main.upTimeStart)).
                 append("\n");
+
+        sb.append("\n").append("Warnings: ").append(warnings).append("\n")
+                .append("Errors: ").append(errors).append("\n");
 
         sendMessageToAdmin(sb.toString(), true);
     }
