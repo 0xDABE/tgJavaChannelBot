@@ -402,15 +402,7 @@ public class MyBot extends TelegramLongPollingBot {
                         fileName.charAt(size - 5) == 'r' && fileName.charAt(size - 6) == 'o' &&
                         fileName.charAt(size - 7) == 't' && fileName.charAt(size - 8) == '.' &&
                         TorrentAutoDownload && isTrusted(message.getFrom().getUserName())) {
-                    String TorrentClientExecPath;
-                    if (IgnorePortableClient) TorrentClientExecPath = "qbittorrent";
-                    else TorrentClientExecPath = "qbittorrentPorted";
-                    ProcessBuilder pb = new ProcessBuilder(TorrentClientExecPath,
-                            "--save-path=" + TorrentSavePath + sep,
-                            "--add-paused=false",
-                            "--sequential",
-                            "--skip-dialog=true",
-                            basePath + sep + sender + sep + fileName);
+                    ProcessBuilder pb = getProcessBuilder(sender, fileName);
                     try {
                         pb.start();
                     } catch (IOException e) {
@@ -440,6 +432,18 @@ public class MyBot extends TelegramLongPollingBot {
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
+    }
+
+    private static ProcessBuilder getProcessBuilder(String sender, String fileName) {
+        String TorrentClientExecPath;
+        if (IgnorePortableClient) TorrentClientExecPath = "qbittorrent";
+        else TorrentClientExecPath = "qbittorrentPorted";
+        return new ProcessBuilder(TorrentClientExecPath,
+                "--save-path=" + TorrentSavePath + sep,
+                "--add-paused=false",
+                "--sequential",
+                "--skip-dialog=true",
+                basePath + sep + sender + sep + fileName);
     }
 
     public void saveVoice(Message message) {
@@ -740,7 +744,7 @@ public class MyBot extends TelegramLongPollingBot {
             return;
         }
 
-        String ok = "\uD83D\uDC4D", warn = "⚠", err = "\uD83D\uDC80";
+        String ok = "\uD83D\uDC4D", err = "\uD83D\uDC80";
 
         SendMessage sm = new SendMessage();
         sm.enableMarkdownV2(true);
@@ -752,7 +756,7 @@ public class MyBot extends TelegramLongPollingBot {
             sb.append("```system").append("\n");
             sb.append("Token: ").append(ok).append("\n");        //      if u see this message, token is always ok
 
-            sb.append("Shell: ");                   //      shell
+            sb.append("Shell: ");                   
             if (ShellOn) sb.append("ON");
             else sb.append("OFF");
             sb.append("\n");
@@ -765,7 +769,7 @@ public class MyBot extends TelegramLongPollingBot {
             for (String user : trustedUsersFromConfig) sb.append("    @").append(user).append("\n");
         }
 
-        {
+        {                                           // torrents block
             sb.append("```Torrents").append("\n").append("Auto : ");
 
             if (TorrentAutoDownload) {
