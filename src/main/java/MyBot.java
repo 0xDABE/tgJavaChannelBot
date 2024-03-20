@@ -6,6 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.File;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import javax.net.ssl.HttpsURLConnection;
+import java.awt.*;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -786,8 +787,9 @@ public class MyBot extends TelegramLongPollingBot {
             else sb.append("OFF").append("\n").append("```").append("\n");
         }
 
+
         sb.append("Uptime: ").
-                append(Times.getTimeMillis(System.currentTimeMillis() - Main.upTimeStart)).
+                append(Times.getTimeMillis(System.currentTimeMillis() - Main.upTimeStart).replace(".", ",")).
                 append("\n");
 
         sb.append("\n").append("Warnings: ").append(warnings).append("\n")
