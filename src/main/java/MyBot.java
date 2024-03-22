@@ -1,8 +1,8 @@
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.GetFile;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.*;
 import org.telegram.telegrambots.meta.api.objects.File;
+import org.telegram.telegrambots.meta.api.objects.*;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -46,21 +46,23 @@ public class MyBot extends TelegramLongPollingBot {
     public static boolean ShellOn = false;
 
 
-    public MyBot(){
+    public MyBot() {
         super(botToken);
     }
 
-    public enum User{
+    public enum User {
         Admin, Trusted, User;
 
-        public String toString(){
-            switch (this){
-                case Admin -> {return "Admin";}
-                case Trusted -> {return "Trusted";}
-            }
-            return "User";
+        @Override
+        public String toString() {
+            return switch (this) {
+                case Admin -> "Admin";
+                case Trusted -> "Trusted";
+                default -> "User";
+            };
         }
     }
+
 
     public void sendMessageToAdmin(String in, boolean makrdown) {
         SendMessage sm = new SendMessage();
@@ -105,13 +107,13 @@ public class MyBot extends TelegramLongPollingBot {
                     Admin - root user (always trusted, solo)
                     Trusted - trusted user (has more power than common user)
                     User - common user
-    
+                    
                     /calc -  Calculator
                     Usage: /calc <regex>
                     Example: /calc 12**2 + 1-3
-    
+                    
                     /shell -  Server shell (not available in channels)
-    
+                    
                     /tr -  Language translator
                     Usage: /tr - language list
                     /tr <languageSRC>|<languageOUT> <StringToTranslate>
@@ -139,13 +141,13 @@ public class MyBot extends TelegramLongPollingBot {
                     Admin - root user (always trusted, solo)
                     Trusted - trusted user (has more power than common user)
                     User - common user
-    
+                    
                     /calc -  Calculator
                     Usage: /calc <regex>
                     Example: /calc 12**2 + 1-3
-    
+                    
                     /shell -  Server shell (bot private message only usage)
-    
+                    
                     /tr -  Language translator
                     Usage: /tr - language list
                     /tr <languageSRC>|<languageOUT> <StringToTranslate>
@@ -160,13 +162,12 @@ public class MyBot extends TelegramLongPollingBot {
                       - auto download .torent files""";
 
 
-
         sendMessage(s, messageFromUpd.getChatId(), false);
     }
 
     public void happyBirthday(Message message) {
         String text = message.getText();
-        if (!message.getFrom().getUserName().equals(Admin)){
+        if (!message.getFrom().getUserName().equals(Admin)) {
             sendMessage("You can't sorry", message.getChatId(), false);
             return;
         }
@@ -417,8 +418,7 @@ public class MyBot extends TelegramLongPollingBot {
                         e.printStackTrace();
                     }
 
-                }
-                else {
+                } else {
                     sendMessage("You are not trusted user. Beg help from admin, little pussy",
                             message.getChatId(), false);
                     return;
@@ -538,7 +538,7 @@ public class MyBot extends TelegramLongPollingBot {
     }
 
 
-    public void runWithMagnetLink(String link){
+    public void runWithMagnetLink(String link) {
         String TorrentClientExecPath;
         if (IgnorePortableClient) TorrentClientExecPath = "qbittorrent";
         else TorrentClientExecPath = "qbittorrentPorted";
@@ -555,13 +555,13 @@ public class MyBot extends TelegramLongPollingBot {
         }
     }
 
-    public boolean isTrusted(String user){
+    public boolean isTrusted(String user) {
         if (user.equals(MyBot.Admin)) return true;
         for (String item : trustedUsersFromConfig) if (user.equals(item)) return true;
         return false;
     }
 
-    public User getUserType(String user){
+    public User getUserType(String user) {
         if (user.equals(MyBot.Admin)) return User.Admin;
         if (isTrusted(user)) return User.Trusted;
         return User.User;
@@ -617,7 +617,7 @@ public class MyBot extends TelegramLongPollingBot {
                 whoAmI(update.getMessage());
                 return;
             }
-            if (message.startsWith("magnet:")){
+            if (message.startsWith("magnet:")) {
                 writeToLogFile(update.getMessage());
                 if (isTrusted(update.getMessage().getFrom().getUserName()))
                     runWithMagnetLink(message);
@@ -628,12 +628,12 @@ public class MyBot extends TelegramLongPollingBot {
                 }
                 return;
             }
-            if (message.equals("/test")){
+            if (message.equals("/test")) {
                 writeToLogFile(update.getMessage());
                 runTest(update.getMessage());
                 return;
             }
-            if (message.equals("/stop")){
+            if (message.equals("/stop")) {
                 writeToLogFile(update.getMessage());
                 stopBot(update.getMessage());
                 return;
@@ -717,46 +717,45 @@ public class MyBot extends TelegramLongPollingBot {
         else sendMessage("You can't do it", message.getChatId(), false);
     }
 
-    public static void addTrustedUser(String user){
+    public static void addTrustedUser(String user) {
         if (!trustedUsersFromConfig.contains(user)) trustedUsersFromConfig.add(user);
     }
 
-    public static void removeTrustedUser(String user){
+    public static void removeTrustedUser(String user) {
         trustedUsersFromConfig.remove(user);
     }
 
-    public void addTrustedUser(Message message){
+    public void addTrustedUser(Message message) {
         if (message.getFrom().getUserName().equals(Admin))
             addTrustedUser(message.getText().
                     replace("/addt ", "").replace("@", "").trim());
         else sendMessage("You can't little pussy", message.getChatId(), false);
     }
 
-    public void removeTrustedUser(Message message){
+    public void removeTrustedUser(Message message) {
         if (message.getFrom().getUserName().equals(Admin))
             removeTrustedUser(message.getText().
                     replace("/remt ", "").replace("@", "").trim());
         else sendMessage("You can't little pussy", message.getChatId(), false);
     }
 
-    public void getTrustedUsers(Message message){
+    public void getTrustedUsers(Message message) {
         if (isTrusted(message.getFrom().getUserName())) {
             StringBuilder sb = new StringBuilder();
             for (String item : trustedUsersFromConfig) sb.append("@").append(item).append(", ");
             sb.delete(sb.length() - 2, sb.length() - 1);
             sendMessage(sb.toString(), message.getChatId(), false);
-        }
-        else sendMessage("You are not trusted user to get trusted users lol", message.getChatId(), false);
+        } else sendMessage("You are not trusted user to get trusted users lol", message.getChatId(), false);
     }
 
-    public void whoAmI(Message message){
+    public void whoAmI(Message message) {
         sendMessage("You are \"" + getUserType(message.getFrom().getUserName()).toString() + "\"",
                 message.getChatId(), false);
     }
 
-    public void runTest(Message message){
+    public void runTest(Message message) {
         int errors = 0, warnings = 0;
-        if (!message.getFrom().getUserName().equals(Admin)){
+        if (!message.getFrom().getUserName().equals(Admin)) {
             sendMessage("You are too stupid to do test stuff, only admin can",
                     message.getChatId(), false);
             return;
@@ -774,7 +773,7 @@ public class MyBot extends TelegramLongPollingBot {
             sb.append("```system").append("\n");
             sb.append("Token: ").append(ok).append("\n");        //      if u see this message, token is always ok
 
-            sb.append("Shell: ");                   
+            sb.append("Shell: ");
             if (ShellOn) sb.append("ON");
             else sb.append("OFF");
             sb.append("\n");
@@ -796,13 +795,12 @@ public class MyBot extends TelegramLongPollingBot {
                 java.io.File file = new java.io.File(TorrentSavePath);
                 sb.append("Path: ");
                 if (file.exists()) sb.append(ok).append("\n");
-                else{
+                else {
                     sb.append(err).append(" (path unaccessible)\n");
-                    errors+=1;
+                    errors += 1;
                 }
                 sb.append("```").append("\n");
-            }
-            else sb.append("OFF").append("\n").append("```").append("\n");
+            } else sb.append("OFF").append("\n").append("```").append("\n");
         }
 
 
