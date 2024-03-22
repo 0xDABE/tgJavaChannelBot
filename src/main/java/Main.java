@@ -16,8 +16,6 @@ public class Main {
     public static void run(){
         String CfgPath = "config.txt";
 
-        MyBot myBot = new MyBot();
-
         int check = CfgLoader.load(CfgPath);
         switch (check){
             case -1:{
@@ -36,6 +34,8 @@ public class Main {
                 System.exit(-4);
             }
         }
+
+        MyBot myBot = new MyBot();
 
         File file = new File(MyBot.languagePath);
         System.out.println("Language file: from \"" + MyBot.languagePath + "\"");

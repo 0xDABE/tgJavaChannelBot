@@ -6,7 +6,6 @@ import org.telegram.telegrambots.meta.api.objects.File;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import javax.net.ssl.HttpsURLConnection;
-import java.awt.*;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -24,9 +23,12 @@ import java.util.Objects;
 import java.util.Scanner;
 
 public class MyBot extends TelegramLongPollingBot {
+
     public static long CHATID = 0L;
-    public static String token = "";
+
+    public static String botToken = "";
     public static String botName = "";
+
     public static String basePath = "";
     public static String LogFileName = "";
     public static String sep = "";
@@ -42,6 +44,11 @@ public class MyBot extends TelegramLongPollingBot {
     public static boolean TorrentAutoDownload = false;
     public static boolean LanguageLoaded = false;
     public static boolean ShellOn = false;
+
+
+    public MyBot(){
+        super(botToken);
+    }
 
     public enum User{
         Admin, Trusted, User;
@@ -575,32 +582,32 @@ public class MyBot extends TelegramLongPollingBot {
                 happyBirthday(update.getMessage());
                 return;
             }
-            if (message.startsWith("/calc")) {
+            if (message.startsWith("/calc ")) {
                 writeToLogFile(update.getMessage());
                 calcPy(update.getMessage());
                 return;
             }
-            if (message.startsWith("/tr")) {
+            if (message.startsWith("/tr ")) {
                 writeToLogFile(update.getMessage());
                 translate(update.getMessage());
                 return;
             }
-            if (message.startsWith("/shell")) {
+            if (message.startsWith("/shell ")) {
                 writeToLogFile(update.getMessage());
                 shellPy(update.getMessage());
                 return;
             }
-            if (message.startsWith("/addt")) {
+            if (message.startsWith("/addt ")) {
                 writeToLogFile(update.getMessage());
                 addTrustedUser(update.getMessage());
                 return;
             }
-            if (message.startsWith("/remt")) {
+            if (message.startsWith("/remt ")) {
                 writeToLogFile(update.getMessage());
                 removeTrustedUser(update.getMessage());
                 return;
             }
-            if (message.startsWith("/gett")) {
+            if (message.startsWith("/gett ")) {
                 writeToLogFile(update.getMessage());
                 getTrustedUsers(update.getMessage());
                 return;
@@ -624,6 +631,11 @@ public class MyBot extends TelegramLongPollingBot {
             if (message.equals("/test")){
                 writeToLogFile(update.getMessage());
                 runTest(update.getMessage());
+                return;
+            }
+            if (message.equals("/stop")){
+                writeToLogFile(update.getMessage());
+                stopBot(update.getMessage());
                 return;
             }
         }
@@ -656,19 +668,19 @@ public class MyBot extends TelegramLongPollingBot {
         if (update.hasChannelPost() && update.getChannelPost().hasText()) {
             String message = update.getChannelPost().getText();
 
-            if (message.startsWith("/help")) {
+            if (message.startsWith("/help ")) {
                 helpChannel(update.getChannelPost());
                 return;
             }
-            if (message.startsWith("/calc")) {
+            if (message.startsWith("/calc ")) {
                 calcPy(update.getChannelPost());
                 return;
             }
-            if (message.startsWith("/tr")) {
+            if (message.startsWith("/tr ")) {
                 translate(update.getChannelPost());
                 return;
             }
-            if (message.startsWith("/shell")) {
+            if (message.startsWith("/shell ")) {
                 sendMessage("You can't use shell in channels", update.getChannelPost().getChatId(), false);
                 return;
             }
@@ -698,6 +710,11 @@ public class MyBot extends TelegramLongPollingBot {
             saveVideoBestQual(update.getChannelPost());
             return;
         }
+    }
+
+    private void stopBot(Message message) {
+        if (getUserType(message.getFrom().getUserName()) == User.Admin) System.exit(0);
+        else sendMessage("You can't do it", message.getChatId(), false);
     }
 
     public static void addTrustedUser(String user){
@@ -767,7 +784,8 @@ public class MyBot extends TelegramLongPollingBot {
 
         {                                           // trusted users block
             sb.append("Current trusted users: ").append(trustedUsersFromConfig.size()).append("\n");
-            for (String user : trustedUsersFromConfig) sb.append("    @").append(user).append("\n");
+            for (String user : trustedUsersFromConfig)
+                sb.append("    @").append(user.replaceAll("_", "\\\\_")).append("\n");
         }
 
         {                                           // torrents block
@@ -804,10 +822,5 @@ public class MyBot extends TelegramLongPollingBot {
     @Override
     public String getBotUsername() {
         return botName;
-    }
-
-    @Override
-    public String getBotToken() {
-        return token;
     }
 }

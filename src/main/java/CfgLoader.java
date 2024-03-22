@@ -29,8 +29,8 @@ public class CfgLoader{
                 }
                 if (temp.contains("Token=")){
                     arr = temp.split("\"");
-                    MyBot.token = arr[1];
-                    if (Objects.equals(MyBot.token, "")){
+                    MyBot.botToken = arr[1];
+                    if (Objects.equals(MyBot.botToken, "")){
                         ColoredMessage.red("    Error: token is empty", CompatibilityModeOff);
                         return -1;
                     }
@@ -175,7 +175,7 @@ public class CfgLoader{
             ColoredMessage.yellow("    Launching with TorrentAuto=\"False\"\n", CompatibilityModeOff);
         }
         if (Objects.equals(MyBot.sep, "") || Objects.equals(MyBot.basePath, "")
-                || Objects.equals(MyBot.botName, "") || Objects.equals(MyBot.token, "")){
+                || Objects.equals(MyBot.botName, "") || Objects.equals(MyBot.botToken, "")){
             ColoredMessage.red("Config is not correct", CompatibilityModeOff);
             return -1;
         }
