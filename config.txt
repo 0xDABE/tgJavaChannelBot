@@ -11,7 +11,6 @@ AdminNick=""                         # use only if you going to use shell: Shell
 *LogFileName="chatLog.txt"
 LanguageFileName="languageCodes.txt"
 *BasePath=""     # WITHOUT last separator
-*Separator="/"
 *TimeZoneUTCplus="0"    #  Hour offset from UTC
 ShellIsOn="True"
 

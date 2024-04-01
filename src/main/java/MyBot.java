@@ -23,6 +23,8 @@ import java.util.Objects;
 import java.util.Scanner;
 
 public class MyBot extends TelegramLongPollingBot {
+    
+    public static boolean coloredOutput = false;
 
     public static long CHATID = 0L;
 
@@ -31,7 +33,6 @@ public class MyBot extends TelegramLongPollingBot {
 
     public static String basePath = "";
     public static String LogFileName = "";
-    public static String sep = "";
     public static String languagePath = "";
     public static String Admin = "";
     public static String TorrentSavePath = "";
@@ -67,7 +68,7 @@ public class MyBot extends TelegramLongPollingBot {
     public void sendMessageToAdmin(String in, boolean makrdown) {
         SendMessage sm = new SendMessage();
         if (CHATID == 0L) {
-            ColoredMessage.yellow("Can't send to empty ChatID", CfgLoader.CompatibilityModeOff);
+            ColoredMessage.yellow("Can't send to empty ChatID", coloredOutput);
             return;
         }
         sm.enableMarkdownV2(makrdown);
@@ -83,7 +84,7 @@ public class MyBot extends TelegramLongPollingBot {
     public void sendMessage(String in, long CHATID, boolean makrdown) {
         SendMessage sm = new SendMessage();
         if (CHATID == 0L) {
-            ColoredMessage.yellow("Can't send to empty ChatID", CfgLoader.CompatibilityModeOff);
+            ColoredMessage.yellow("Can't send to empty ChatID", coloredOutput);
             return;
         }
         sm.setChatId(CHATID);
@@ -337,7 +338,7 @@ public class MyBot extends TelegramLongPollingBot {
         String mes = message.getText();
         mes = mes.replaceAll("\n", " ");
         mes = fdt + " >> " + sender + " >> " + mes + "\n";
-        try (FileOutputStream file = new FileOutputStream(basePath + sep + LogFileName, true)) {
+        try (FileOutputStream file = new FileOutputStream(basePath + java.io.File.separator + LogFileName, true)) {
             file.write(mes.getBytes());
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -359,7 +360,7 @@ public class MyBot extends TelegramLongPollingBot {
             java.io.File downloadedFile = downloadFile(filePath);
 
             java.nio.file.Path sourcePath = downloadedFile.toPath();
-            java.nio.file.Path targetPath = Paths.get(basePath + sep + sender + sep + downloadedFile.getName() + ".png");
+            java.nio.file.Path targetPath = Paths.get(basePath + java.io.File.separator + sender + java.io.File.separator + downloadedFile.getName() + ".png");
 
             try {
                 Files.createDirectories(targetPath.getParent());
@@ -370,7 +371,7 @@ public class MyBot extends TelegramLongPollingBot {
                 String fdt = zonedDateTime.format(formatter);
                 String mes = " SENT A PHOTO ";
                 mes = fdt + " ** " + sender + " ** " + mes + "\n";
-                try (FileOutputStream file1 = new FileOutputStream(basePath + sep + LogFileName, true)) {
+                try (FileOutputStream file1 = new FileOutputStream(basePath + java.io.File.separator + LogFileName, true)) {
                     file1.write(mes.getBytes());
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -401,7 +402,7 @@ public class MyBot extends TelegramLongPollingBot {
             int size = fileName.length();
 
             java.nio.file.Path sourcePath = downloadedFile.toPath();
-            java.nio.file.Path targetPath = Paths.get(basePath + sep + sender + sep + fileName);
+            java.nio.file.Path targetPath = Paths.get(basePath + java.io.File.separator + sender + java.io.File.separator + fileName);
 
             try {
                 Files.createDirectories(targetPath.getParent());
@@ -429,7 +430,7 @@ public class MyBot extends TelegramLongPollingBot {
                 String fdt = zonedDateTime.format(formatter);
                 String mes = " SENT A FILE \"" + fileName + "\"";
                 mes = fdt + " ** " + sender + " ** " + mes + "\n";
-                try (FileOutputStream file1 = new FileOutputStream(basePath + sep + LogFileName, true)) {
+                try (FileOutputStream file1 = new FileOutputStream(basePath + java.io.File.separator + LogFileName, true)) {
                     file1.write(mes.getBytes());
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -447,11 +448,11 @@ public class MyBot extends TelegramLongPollingBot {
         if (IgnorePortableClient) TorrentClientExecPath = "qbittorrent";
         else TorrentClientExecPath = "qbittorrentPorted";
         return new ProcessBuilder(TorrentClientExecPath,
-                "--save-path=" + TorrentSavePath + sep,
+                "--save-path=" + TorrentSavePath + java.io.File.separator,
                 "--add-paused=false",
                 "--sequential",
                 "--skip-dialog=true",
-                basePath + sep + sender + sep + fileName);
+                basePath + java.io.File.separator + sender + java.io.File.separator + fileName);
     }
 
     public void saveVoice(Message message) {
@@ -470,7 +471,7 @@ public class MyBot extends TelegramLongPollingBot {
             java.io.File downloadedFile = downloadFile(filePath);
 
             java.nio.file.Path sourcePath = downloadedFile.toPath();
-            java.nio.file.Path targetPath = Paths.get(basePath + sep + sender + sep + voice.getFileId() + "_" + voice.getDuration() + ".mp3");
+            java.nio.file.Path targetPath = Paths.get(basePath + java.io.File.separator + sender + java.io.File.separator + voice.getFileId() + "_" + voice.getDuration() + ".mp3");
 
             try {
                 Files.createDirectories(targetPath.getParent());
@@ -482,7 +483,7 @@ public class MyBot extends TelegramLongPollingBot {
                 String formattedDateTime = zonedDateTime.format(formatter);
                 String mes = " SENT A VOICE ";
                 mes = formattedDateTime + " ** " + sender + " ** " + mes + "\n";
-                try (FileOutputStream file1 = new FileOutputStream(basePath + sep + LogFileName, true)) {
+                try (FileOutputStream file1 = new FileOutputStream(basePath + java.io.File.separator + LogFileName, true)) {
                     file1.write(mes.getBytes());
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -512,7 +513,7 @@ public class MyBot extends TelegramLongPollingBot {
                 java.io.File downloadedFile = downloadFile(file.getFilePath());
 
                 java.nio.file.Path sourcePath = downloadedFile.toPath();
-                java.nio.file.Path targetPath = Paths.get(basePath + sep + sender + sep + video.getFileId() + "_" + video.getDuration() + ".mp4");
+                java.nio.file.Path targetPath = Paths.get(basePath + java.io.File.separator + sender + java.io.File.separator + video.getFileId() + "_" + video.getDuration() + ".mp4");
 
                 try {
                     Files.createDirectories(targetPath.getParent());
@@ -523,7 +524,7 @@ public class MyBot extends TelegramLongPollingBot {
                     String fdt = zonedDateTime.format(formatter);
                     String mes = " SENT A VIDEO ";
                     mes = fdt + " ** " + sender + " ** " + mes + "\n";
-                    try (FileOutputStream file1 = new FileOutputStream(basePath + sep + LogFileName, true)) {
+                    try (FileOutputStream file1 = new FileOutputStream(basePath + java.io.File.separator + LogFileName, true)) {
                         file1.write(mes.getBytes());
                     } catch (IOException e) {
                         throw new RuntimeException(e);
@@ -538,12 +539,20 @@ public class MyBot extends TelegramLongPollingBot {
     }
 
 
-    public void runWithMagnetLink(String link) {
-        String TorrentClientExecPath;
+    public void runWithMagnetLink(Message message) {
+        if (!TorrentAutoDownload) return;
+        if (!isTrusted(message.getFrom().getUserName())) {
+            sendMessage("You are not trusted user. Ask help from admin",
+                    message.getChatId(), false);
+            return;
+        }
+        String TorrentClientExecPath, link;
+        if (message.getText().trim().split(" ").length == 1) link = message.getText().trim();
+        else link = message.getText().trim().split(" ")[0];
         if (IgnorePortableClient) TorrentClientExecPath = "qbittorrent";
         else TorrentClientExecPath = "qbittorrentPorted";
         ProcessBuilder pb = new ProcessBuilder(TorrentClientExecPath,
-                "--save-path=" + TorrentSavePath + sep,
+                "--save-path=" + TorrentSavePath + java.io.File.separator,
                 "--add-paused=false",
                 "--sequential",
                 "--skip-dialog=true",
@@ -619,13 +628,7 @@ public class MyBot extends TelegramLongPollingBot {
             }
             if (message.startsWith("magnet:")) {
                 writeToLogFile(update.getMessage());
-                if (isTrusted(update.getMessage().getFrom().getUserName()))
-                    runWithMagnetLink(message);
-                else {
-                    sendMessage("You are not trusted user. Beg help from admin, little pussy",
-                            update.getMessage().getChatId(), false);
-                    return;
-                }
+                runWithMagnetLink(update.getMessage());
                 return;
             }
             if (message.equals("/test")) {

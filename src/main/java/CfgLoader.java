@@ -1,185 +1,84 @@
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.nio.file.Paths;
-import java.util.Locale;
-import java.util.Objects;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 
-public class CfgLoader{
-    public static String returnable = "";
-    public static boolean CompatibilityModeOff = false;
-    public static int load(String path){
-        File file = new File(path);
-        if (!file.exists()){
-            ColoredMessage.red("Config not found at \"" + path + "\"", CompatibilityModeOff);
-            return -1;
-        }
-        System.out.println("Config: from \"" + path + "\"");
-        try(Scanner scanf = new Scanner(file)){
-            while (scanf.hasNextLine()){
-                String temp = scanf.nextLine();
-                String[] arr;
-                if (temp.contains("ColoredOutput=")){
-                    arr = temp.split("\"");
-                    if (Objects.equals(arr[1].toLowerCase(Locale.ROOT), "true"))
-                        CompatibilityModeOff = true;
-                    else if (!arr[1].toLowerCase(Locale.ROOT).equals("false")) ColoredMessage.yellow("    ColoredOutput is not True, but also not a False. " +
-                            "Launching with ColoredOutput=\"False\" (case does not matter)", CompatibilityModeOff);
-                    continue;
-                }
-                if (temp.contains("Token=")){
-                    arr = temp.split("\"");
-                    MyBot.botToken = arr[1];
-                    if (Objects.equals(MyBot.botToken, "")){
-                        ColoredMessage.red("    Error: token is empty", CompatibilityModeOff);
-                        return -1;
-                    }
-                    continue;
-                }
-                if (temp.contains("BotName=")){
-                    arr = temp.split("\"");
-                    MyBot.botName = arr[1];
-                    if (Objects.equals(MyBot.botName, "")){
-                        ColoredMessage.red("    Error: BotName is empty", CompatibilityModeOff);
-                        return -1;
-                    }
-                    continue;
-                }
-                if (temp.contains("DoNotUsePortableTorrentClient=")){
-                    arr = temp.split("\"");
-                    if (Objects.equals(arr[1].toLowerCase(Locale.ROOT), "true"))
-                        MyBot.IgnorePortableClient = true;
-                    else if (!arr[1].toLowerCase(Locale.ROOT).equals("false")) ColoredMessage.yellow("    DoNotUsePortableTorrentClient is not True, but also not a False. " +
-                            "Launching with DoNotUsePortableTorrentClient=\"False\" (case does not matter)", CompatibilityModeOff);
-                    continue;
-                }
-                if (temp.contains("BasePath=")){
-                    arr = temp.split("\"");
-                    MyBot.basePath = arr[1];
-                    if (Objects.equals(MyBot.basePath, "")){
-                        ColoredMessage.red("    Error: BasePath is empty", CompatibilityModeOff);
-                        return -1;
-                    }
-                    Paths.get(MyBot.basePath).toFile().mkdirs();
-                    continue;
-                }
-                if (temp.contains("Separator=")){
-                    arr = temp.split("\"");
-                    MyBot.sep = arr[1];
-                    if (Objects.equals(MyBot.sep, "")){
-                        ColoredMessage.red("    Error: Separator is empty", CompatibilityModeOff);
-                        return -1;
-                    }
-                    continue;
-                }
-                if (temp.contains("ChatID=")){
-                    arr = temp.split("\"");
-                    try{
-                        if (Objects.equals(arr[1], "")) MyBot.CHATID = 0L;
-                        else MyBot.CHATID = Long.parseLong(arr[1]);
-                    }
-                    catch (NumberFormatException e){
-                        returnable = arr[1];
-                        return -4;
-                    }
-                    continue;
-                }
-                if (temp.contains("TorrentAuto=")){
-                    arr = temp.split("\"");
-                    if (Objects.equals(arr[1].toLowerCase(Locale.ROOT), "true"))
-                        MyBot.TorrentAutoDownload = true;
-                    else if (!arr[1].toLowerCase(Locale.ROOT).equals("false")) ColoredMessage.yellow("    TorrentAuto is not True, but also not a False. " +
-                            "Launching with TorrentAuto=\"False\" (case does not matter)", CompatibilityModeOff);
-                    continue;
-                }
-                if (temp.contains("AdminNick=")){
-                    arr = temp.split("\"");
-                    MyBot.Admin = arr[1];
-                    continue;
-                }
-                if (temp.contains("AddTrustedUser=")){
-                    arr = temp.split("\"");
-                    if (arr.length > 1) MyBot.addTrustedUser(arr[1]);
-                    continue;
-                }
-                if (temp.contains("LogFileName=")){
-                    arr = temp.split("\"");
-                    MyBot.LogFileName = arr[1];
-                    if (Objects.equals(MyBot.LogFileName, "")){
-                        ColoredMessage.red("    Error: LogFileName is empty", CompatibilityModeOff);
-                        return -1;
-                    }
-                }
-                if (temp.contains("LanguageFileName=")){
-                    arr = temp.split("\"");
-                    MyBot.languagePath = arr[1];
-                    if (Objects.equals(MyBot.languagePath, "")){
-                        ColoredMessage.yellow("    LanguageFileName is empty. Launching without it", CompatibilityModeOff);
-                    }
-                }
-                if (temp.contains("HappyBirthdayFileName=")){
-                    arr = temp.split("\"");
-                    hbReader.HBfileName = arr[1];
-                    if (Objects.equals(hbReader.HBfileName, "happy.txt")){
-                        ColoredMessage.yellow("    HappyBirthdayFileName is empty. Launching without with \"happy.txt\"", CompatibilityModeOff);
-                    }
-                }
-                if (temp.contains("TorrentSavePath=")){
-                    arr = temp.split("\"");
-                    MyBot.TorrentSavePath = arr[1];
-                    if (Objects.equals(MyBot.TorrentSavePath, "")){
-                        ColoredMessage.yellow("    TorrentSavePath is empty. Launching without auto torrent downloading", CompatibilityModeOff);
-                    }
-                }
-                if (temp.contains("ShellIsOn=")){
-                    arr = temp.split("\"");
-                    if (Objects.equals(arr[1].toLowerCase(Locale.ROOT), "true"))
-                        MyBot.ShellOn = true;
-                    else if (!arr[1].toLowerCase(Locale.ROOT).equals("false")) ColoredMessage.yellow("    ShellIsOn is not True, but also not a False. " +
-                            "Launching with ShellIsOn=\"False\" (case does not matter)", CompatibilityModeOff);
-                    continue;
-                }
-                if (temp.contains("TimeZoneUTCplus=")){
-                    arr = temp.split("\"");
-                    try{
-                        MyBot.TimeZone = Integer.parseInt(arr[1]);
-                    }
-                    catch (NumberFormatException e){
-                        returnable = arr[1];
-                        return -2;
-                    }
+public class CfgLoader {
+    public String currentConfig;
+    public String stdwarn = "";
+    public String stderr = "";
+    private final String[] req;
+    private final String[] extra;
+    private List<String> reqAsList;
+    private final HashMap<String, String> configuration = new HashMap<>();
 
-                    if (MyBot.TimeZone < -18 || MyBot.TimeZone > 18){
-                        returnable = arr[1];
-                        return -3;
-                    }
 
-                    if (MyBot.TimeZone == 0){
-                        ColoredMessage.red("    Error: TimeZoneUTCplus is empty", CompatibilityModeOff);
-                        return -1;
+    public CfgLoader(String filename, String[] required, String[] extra) {
+        this.currentConfig = filename;
+        this.req = required;
+        this.extra = extra;
+    }
+
+    private void fillConfigurationReq() {
+        for (String item : req)
+            configuration.put(item, null);
+        reqAsList = Arrays.asList(req);
+    }
+
+    private void fillConfigurationExtra() {
+        for (String item : extra)
+            configuration.put(item, null);
+    }
+
+
+    public boolean load() {
+        if (req != null) fillConfigurationReq();
+        if (extra != null) fillConfigurationExtra();
+        try (Scanner scanner = new Scanner(new File(currentConfig))) {
+            while (scanner.hasNextLine()) {
+                String full = scanner.nextLine();
+                if (full.contains("//")) full = full.substring(0, full.indexOf("//")).trim();
+                if (full.contains("#")) full = full.substring(0, full.indexOf("#")).trim();
+                String[] line = full.split("=", 2);
+                if (line.length == 1) continue;
+                if (line[1].isEmpty()) {
+                    configuration.put(line[0], null);
+                    continue;
+                }
+                if (configuration.containsKey(line[0])) {
+                    if (configuration.get(line[0]) != null) {
+                        if (reqAsList.contains(line[0])) {
+                            stderr = "Error: duplicate obligatory key's \"" + line[0] + "\" values : \"" + configuration.get(line[0]) +
+                                    "\" and \"" + line[1] + "\"\n";
+                            return false;
+                        }
+                        stdwarn += "duplicate key's \"" + line[0] + "\" values : \"" + configuration.get(line[0]) +
+                                "\" and \"" + line[1] + "\"\n";
                     }
+                    configuration.put(line[0], line[1]);
                 }
             }
-        } catch (FileNotFoundException e){
-            e.printStackTrace();
+        } catch (IOException e) {
+            stderr = "Error: IOException. Can't access config file.";
+            return false;
         }
-        
-        if (Objects.equals(MyBot.Admin, "") && MyBot.ShellOn){
-            ColoredMessage.yellow("    You set ShellIsOn to \"true\", but " +
-                    "not set Admin nick in config.", CompatibilityModeOff);
-            ColoredMessage.yellow("    Launching with ShellIsOn=\"False\"\n", CompatibilityModeOff);
+        return checkReq();
+    }
+
+    private boolean checkReq() {
+        if (req == null) return true;
+        for (String item : req) {
+            if (configuration.get(item) == null) {
+                stderr = "Error: config must contain \"" + item + "\"";
+                return false;
+            }
         }
-        if (Objects.equals(MyBot.TorrentSavePath, "") && MyBot.TorrentAutoDownload){
-            ColoredMessage.yellow("    You set TorrentAuto to \"true\", but " +
-                    "not set torrent downloading path in config.", CompatibilityModeOff);
-            ColoredMessage.yellow("    Launching with TorrentAuto=\"False\"\n", CompatibilityModeOff);
-        }
-        if (Objects.equals(MyBot.sep, "") || Objects.equals(MyBot.basePath, "")
-                || Objects.equals(MyBot.botName, "") || Objects.equals(MyBot.botToken, "")){
-            ColoredMessage.red("Config is not correct", CompatibilityModeOff);
-            return -1;
-        }
-        else ColoredMessage.green("    loaded successfully\n", CompatibilityModeOff);
-        return 0;
+        return true;
+    }
+
+    public String getCfgValue(String key) {
+        return configuration.getOrDefault(key, null);
     }
 }

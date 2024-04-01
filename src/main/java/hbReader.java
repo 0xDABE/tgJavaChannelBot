@@ -46,10 +46,11 @@ public class hbReader {
         if (!today.isEmpty()){
             if (today.size() == 1) {
                 myBot.sendMessageToAdmin(String.format(
-                        "****************************\n" +
-                                "      Today Happy Birthday to:\n" +
-                                "%s\n" +
-                                "****************************",
+                        """
+                                ****************************
+                                      Today Happy Birthday to:
+                                %s
+                                ****************************""",
                         today.get(0)
                 ), false);
             }
@@ -80,7 +81,7 @@ public class hbReader {
                             Map<String, ArrayList<String>> hbNtoD, ArrayList<String> datas){
         File file = new File(path);
         if (!file.exists()){
-            ColoredMessage.red("HB file not found at \"" + path + "\"", CfgLoader.CompatibilityModeOff);
+            ColoredMessage.red("HB file not found at \"" + path + "\"", MyBot.coloredOutput);
         }
 
 
@@ -105,7 +106,7 @@ public class hbReader {
                 if (!datas.contains(arr[arr.length - 1])) datas.add(arr[arr.length - 1]);
             }
             if (datas.isEmpty()){
-                ColoredMessage.yellow("HB file is empty or broken", CfgLoader.CompatibilityModeOff);
+                ColoredMessage.yellow("HB file is empty or broken", MyBot.coloredOutput);
                 System.exit(-1);
             }
         } catch (FileNotFoundException e){
