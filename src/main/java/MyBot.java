@@ -64,6 +64,21 @@ public class MyBot extends TelegramLongPollingBot {
         }
     }
 
+    public enum FileType {
+        Document, Photo, Video, Voice;
+        String sourceFileName = "";
+
+        @Override
+        public String toString() {
+            return switch (this) {
+                case Document -> sourceFileName;
+                case Photo -> sourceFileName + ".png";
+                case Video -> sourceFileName + ".mp4";
+                case Voice -> sourceFileName + ".mp3";
+            };
+        }
+    }
+
 
     public void sendMessageToAdmin(String in, boolean makrdown) {
         SendMessage sm = new SendMessage();
@@ -332,7 +347,8 @@ public class MyBot extends TelegramLongPollingBot {
     public void writeToLogFile(Message message) {
         String sender = message.getFrom().getUserName();
         LocalDateTime dateTime = LocalDateTime.now();
-        ZonedDateTime zonedDateTime = dateTime.atZone(ZoneId.of("Europe/Moscow"));
+        ZoneOffset zoneOffset = ZoneOffset.ofHours(TimeZone);
+        ZonedDateTime zonedDateTime = dateTime.atZone(zoneOffset);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String fdt = zonedDateTime.format(formatter);
         String mes = message.getText();
@@ -347,98 +363,74 @@ public class MyBot extends TelegramLongPollingBot {
 
     public void savePhoto(Message message) {
         List<PhotoSize> photos = message.getPhoto();
-        String fileId = photos.get(photos.size() - 1).getFileId();
         String sender = message.getFrom().getUserName();
-
         GetFile getFileRequest = new GetFile();
-        getFileRequest.setFileId(fileId);
+        getFileRequest.setFileId(photos.get(photos.size() - 1).getFileId());
 
-        try {
-            File file = execute(getFileRequest);
-            String filePath = file.getFilePath();
-
-            java.io.File downloadedFile = downloadFile(filePath);
-
-            java.nio.file.Path sourcePath = downloadedFile.toPath();
-            java.nio.file.Path targetPath = Paths.get(basePath + java.io.File.separator + sender + java.io.File.separator + downloadedFile.getName() + ".png");
-
-            try {
-                Files.createDirectories(targetPath.getParent());
-                Files.move(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
-                LocalDateTime dateTime = LocalDateTime.now();
-                ZonedDateTime zonedDateTime = dateTime.atZone(ZoneId.of("Europe/Moscow"));
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                String fdt = zonedDateTime.format(formatter);
-                String mes = " SENT A PHOTO ";
-                mes = fdt + " ** " + sender + " ** " + mes + "\n";
-                try (FileOutputStream file1 = new FileOutputStream(basePath + java.io.File.separator + LogFileName, true)) {
-                    file1.write(mes.getBytes());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
+        saveAnyFile(getFileRequest, sender, FileType.Photo);
     }
 
     public void saveDoc(Message message) {
         Document document = message.getDocument();
         String sender = message.getFrom().getUserName();
-
-        String fileId = document.getFileId();
-
+        String fileName = document.getFileName();
         GetFile getFileRequest = new GetFile();
-        getFileRequest.setFileId(fileId);
+        getFileRequest.setFileId(document.getFileId());
 
+        FileType docType = FileType.Document;
+        docType.sourceFileName = document.getFileName();
+
+        saveAnyFile(getFileRequest, sender, docType);
+
+        int size = fileName.length();
+        if (TorrentAutoDownload)
+            if (fileName.charAt(size - 1) == 't' && fileName.charAt(size - 2) == 'n' &&
+                    fileName.charAt(size - 3) == 'e' && fileName.charAt(size - 4) == 'r' &&
+                    fileName.charAt(size - 5) == 'r' && fileName.charAt(size - 6) == 'o' &&
+                    fileName.charAt(size - 7) == 't' && fileName.charAt(size - 8) == '.' &&
+                    isTrusted(message.getFrom().getUserName())) {
+                ProcessBuilder pb = getProcessBuilder(sender, fileName);
+                try {
+                    pb.start();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+    }
+
+    public void saveVoice(Message message) {
+        Voice voice = message.getVoice();
+        String sender = message.getFrom().getUserName();
+        GetFile getFileRequest = new GetFile();
+        getFileRequest.setFileId(voice.getFileId());
+
+        saveAnyFile(getFileRequest, sender, FileType.Voice);
+    }
+
+    public void saveVideoBestQual(Message message) {
+        Video video = message.getVideo();
+        String sender = message.getFrom().getUserName();
+        GetFile getFileRequest = new GetFile();
+        getFileRequest.setFileId(video.getFileId());
+
+        saveAnyFile(getFileRequest, sender, FileType.Video);
+    }
+
+
+    public void saveAnyFile(GetFile getFileRequest, String sender, FileType fileType){
         try {
             File file = execute(getFileRequest);
             String filePath = file.getFilePath();
 
             java.io.File downloadedFile = downloadFile(filePath);
-            String fileName = document.getFileName();
-            int size = fileName.length();
 
             java.nio.file.Path sourcePath = downloadedFile.toPath();
-            java.nio.file.Path targetPath = Paths.get(basePath + java.io.File.separator + sender + java.io.File.separator + fileName);
+            if (fileType != FileType.Document) fileType.sourceFileName = downloadedFile.getName();
+            java.nio.file.Path targetPath = Paths.get(basePath + java.io.File.separator + sender + java.io.File.separator + fileType);
 
-            try {
-                Files.createDirectories(targetPath.getParent());
-                Files.move(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
-                if (fileName.charAt(size - 1) == 't' && fileName.charAt(size - 2) == 'n' &&
-                        fileName.charAt(size - 3) == 'e' && fileName.charAt(size - 4) == 'r' &&
-                        fileName.charAt(size - 5) == 'r' && fileName.charAt(size - 6) == 'o' &&
-                        fileName.charAt(size - 7) == 't' && fileName.charAt(size - 8) == '.' &&
-                        TorrentAutoDownload && isTrusted(message.getFrom().getUserName())) {
-                    ProcessBuilder pb = getProcessBuilder(sender, fileName);
-                    try {
-                        pb.start();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                } else {
-                    sendMessage("You are not trusted user. Beg help from admin, little pussy",
-                            message.getChatId(), false);
-                    return;
-                }
-                LocalDateTime dateTime = LocalDateTime.now();
-                ZonedDateTime zonedDateTime = dateTime.atZone(ZoneId.of("Europe/Moscow"));
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                String fdt = zonedDateTime.format(formatter);
-                String mes = " SENT A FILE \"" + fileName + "\"";
-                mes = fdt + " ** " + sender + " ** " + mes + "\n";
-                try (FileOutputStream file1 = new FileOutputStream(basePath + java.io.File.separator + LogFileName, true)) {
-                    file1.write(mes.getBytes());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (TelegramApiException e) {
+            Files.createDirectories(targetPath.getParent());
+            Files.move(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (TelegramApiException | IOException e) {
             e.printStackTrace();
         }
     }
@@ -453,89 +445,6 @@ public class MyBot extends TelegramLongPollingBot {
                 "--sequential",
                 "--skip-dialog=true",
                 basePath + java.io.File.separator + sender + java.io.File.separator + fileName);
-    }
-
-    public void saveVoice(Message message) {
-        Voice voice = message.getVoice();
-
-        String fileId = voice.getFileId();
-        String sender = message.getFrom().getUserName();
-
-        GetFile getFileRequest = new GetFile();
-        getFileRequest.setFileId(fileId);
-
-        try {
-            File file = execute(getFileRequest);
-            String filePath = file.getFilePath();
-
-            java.io.File downloadedFile = downloadFile(filePath);
-
-            java.nio.file.Path sourcePath = downloadedFile.toPath();
-            java.nio.file.Path targetPath = Paths.get(basePath + java.io.File.separator + sender + java.io.File.separator + voice.getFileId() + "_" + voice.getDuration() + ".mp3");
-
-            try {
-                Files.createDirectories(targetPath.getParent());
-                Files.move(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
-                LocalDateTime dateTime = LocalDateTime.now();
-                ZoneOffset zoneOffset = ZoneOffset.ofHours(TimeZone);
-                ZonedDateTime zonedDateTime = dateTime.atZone(zoneOffset);
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                String formattedDateTime = zonedDateTime.format(formatter);
-                String mes = " SENT A VOICE ";
-                mes = formattedDateTime + " ** " + sender + " ** " + mes + "\n";
-                try (FileOutputStream file1 = new FileOutputStream(basePath + java.io.File.separator + LogFileName, true)) {
-                    file1.write(mes.getBytes());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void saveVideoBestQual(Message message) {
-        Video video = message.getVideo();
-
-        String fileId = video.getFileId();
-        String sender = message.getFrom().getUserName();
-
-        GetFile getFileRequest = new GetFile();
-        getFileRequest.setFileId(fileId);
-
-        try {
-            File file = execute(getFileRequest);
-            long fileSize = file.getFileSize();
-
-            if (fileSize > 0) {
-                java.io.File downloadedFile = downloadFile(file.getFilePath());
-
-                java.nio.file.Path sourcePath = downloadedFile.toPath();
-                java.nio.file.Path targetPath = Paths.get(basePath + java.io.File.separator + sender + java.io.File.separator + video.getFileId() + "_" + video.getDuration() + ".mp4");
-
-                try {
-                    Files.createDirectories(targetPath.getParent());
-                    Files.move(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
-                    LocalDateTime dateTime = LocalDateTime.now();
-                    ZonedDateTime zonedDateTime = dateTime.atZone(ZoneId.of("Europe/Moscow"));
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                    String fdt = zonedDateTime.format(formatter);
-                    String mes = " SENT A VIDEO ";
-                    mes = fdt + " ** " + sender + " ** " + mes + "\n";
-                    try (FileOutputStream file1 = new FileOutputStream(basePath + java.io.File.separator + LogFileName, true)) {
-                        file1.write(mes.getBytes());
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
     }
 
 
